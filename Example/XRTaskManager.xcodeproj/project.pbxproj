@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		097023DD265E81A80021A9F2 /* XRTaskSchedulerGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 097023CF265E81A80021A9F2 /* XRTaskSchedulerGroup.m */; };
 		097023DE265E81A80021A9F2 /* BearTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 097023D0265E81A80021A9F2 /* BearTest.m */; };
-		097023DF265E81A80021A9F2 /* XRTaskOrderQueue.mm in Sources */ = {isa = PBXBuildFile; fileRef = 097023D4265E81A80021A9F2 /* XRTaskOrderQueue.mm */; };
+		097023DF265E81A80021A9F2 /* XRTaskOrderQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 097023D4265E81A80021A9F2 /* XRTaskOrderQueue.m */; };
 		097023E0265E81A80021A9F2 /* XRTaskPriorityQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 097023D5265E81A80021A9F2 /* XRTaskPriorityQueue.m */; };
 		097023E1265E81A80021A9F2 /* XRTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 097023D7265E81A80021A9F2 /* XRTask.m */; };
 		097023E2265E81A80021A9F2 /* QiyuSDK.m in Sources */ = {isa = PBXBuildFile; fileRef = 097023D8265E81A80021A9F2 /* QiyuSDK.m */; };
@@ -54,7 +54,7 @@
 		097023D0265E81A80021A9F2 /* BearTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BearTest.m; sourceTree = "<group>"; };
 		097023D2265E81A80021A9F2 /* XRTaskPriorityQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XRTaskPriorityQueue.h; sourceTree = "<group>"; };
 		097023D3265E81A80021A9F2 /* XRTaskSchedulerProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XRTaskSchedulerProtocol.h; sourceTree = "<group>"; };
-		097023D4265E81A80021A9F2 /* XRTaskOrderQueue.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = XRTaskOrderQueue.mm; sourceTree = "<group>"; };
+		097023D4265E81A80021A9F2 /* XRTaskOrderQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XRTaskOrderQueue.m; sourceTree = "<group>"; };
 		097023D5265E81A80021A9F2 /* XRTaskPriorityQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XRTaskPriorityQueue.m; sourceTree = "<group>"; };
 		097023D6265E81A80021A9F2 /* XRTaskOrderQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XRTaskOrderQueue.h; sourceTree = "<group>"; };
 		097023D7265E81A80021A9F2 /* XRTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XRTask.m; sourceTree = "<group>"; };
@@ -72,7 +72,6 @@
 		6003F595195388D20070C39A /* XRTaskManager-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "XRTaskManager-Info.plist"; sourceTree = "<group>"; };
 		6003F597195388D20070C39A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		6003F599195388D20070C39A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		6003F59B195388D20070C39A /* XRTaskManager-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "XRTaskManager-Prefix.pch"; sourceTree = "<group>"; };
 		6003F59C195388D20070C39A /* XRAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XRAppDelegate.h; sourceTree = "<group>"; };
 		6003F59D195388D20070C39A /* XRAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XRAppDelegate.m; sourceTree = "<group>"; };
 		6003F5A5195388D20070C39A /* XRViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XRViewController.h; sourceTree = "<group>"; };
@@ -143,7 +142,7 @@
 				097023D2265E81A80021A9F2 /* XRTaskPriorityQueue.h */,
 				097023D5265E81A80021A9F2 /* XRTaskPriorityQueue.m */,
 				097023D6265E81A80021A9F2 /* XRTaskOrderQueue.h */,
-				097023D4265E81A80021A9F2 /* XRTaskOrderQueue.mm */,
+				097023D4265E81A80021A9F2 /* XRTaskOrderQueue.m */,
 			);
 			path = XRTaskQueue;
 			sourceTree = "<group>";
@@ -220,7 +219,6 @@
 				6003F595195388D20070C39A /* XRTaskManager-Info.plist */,
 				6003F596195388D20070C39A /* InfoPlist.strings */,
 				6003F599195388D20070C39A /* main.m */,
-				6003F59B195388D20070C39A /* XRTaskManager-Prefix.pch */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -429,7 +427,7 @@
 				097023E4265E81A80021A9F2 /* XRTaskSchedulerEnum.m in Sources */,
 				6003F5A7195388D20070C39A /* XRViewController.m in Sources */,
 				097023DD265E81A80021A9F2 /* XRTaskSchedulerGroup.m in Sources */,
-				097023DF265E81A80021A9F2 /* XRTaskOrderQueue.mm in Sources */,
+				097023DF265E81A80021A9F2 /* XRTaskOrderQueue.m in Sources */,
 				097023DE265E81A80021A9F2 /* BearTest.m in Sources */,
 				097023E3265E81A80021A9F2 /* XRTaskScheduler.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
@@ -560,8 +558,9 @@
 			baseConfigurationReference = 8B46F97815197A39D7F2A7F1 /* Pods-XRTaskManager_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "XRTaskManager/XRTaskManager-Prefix.pch";
+				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = "XRTaskManager/XRTaskManager-Info.plist";
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.${PRODUCT_NAME:rfc1034identifier}";
@@ -576,8 +575,9 @@
 			baseConfigurationReference = EA8E9CB5C5F1468721730763 /* Pods-XRTaskManager_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "XRTaskManager/XRTaskManager-Prefix.pch";
+				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = "XRTaskManager/XRTaskManager-Info.plist";
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.${PRODUCT_NAME:rfc1034identifier}";
