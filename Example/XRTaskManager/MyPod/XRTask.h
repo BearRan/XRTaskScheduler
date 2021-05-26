@@ -33,11 +33,11 @@ typedef BOOL(^XRAnalysisIsCompleteBlock)(id data);
  *（调用方只能设置block）
  */
 @property (nonatomic, copy) XRAnalysisIsCompleteBlock analysisIsCompleteBlock;
-/// 任务完成后自动移除（默认：true）
+/// 任务完成后自动移除（默认：YES）
 @property (nonatomic, assign) BOOL removeWhenTaskFinished;
 /// block生成的返回数据
 @property (nonatomic, strong, readonly) id responseData;
-/// 只在XRTaskSchedulerTypePriority类型的任务中生效
+/// 只在XRTaskSchedulerTypePriority类型的任务中生效（默认：XRTaskPriorityDefault）
 @property (nonatomic, assign) XRTaskPriority priority;
 /// 任务唯一ID
 @property (nonatomic, strong) NSString *taskID;

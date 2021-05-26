@@ -27,6 +27,9 @@
 {
     self = [super init];
     if (self) {
+        self.removeWhenTaskFinished = YES;
+        self.priority = XRTaskPriorityDefault;
+        
         __weak typeof(self) weakSelf = self;
         self.taskCompleteBlock = ^(id  _Nonnull data) {
             weakSelf.responseData = data;
