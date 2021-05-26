@@ -17,13 +17,20 @@ typedef BOOL(^XRAnalysisIsCompleteBlock)(id data);
 
 @interface XRTask : NSObject
 
-/// task任务
+/**
+ * task任务
+ *（调用方只能设置block）
+ */
 @property (nonatomic, copy) XRTaskBlock taskBlock;
-/// task完成时的block
-@property (nonatomic, copy) XRTaskCompleteBlock taskCompleteBlock;
+/**
+ * task完成时的block
+ *（调用方只能执行block）
+ */
+@property (nonatomic, copy, readonly) XRTaskCompleteBlock taskCompleteBlock;
 /**
  * 解析如何判定是否完成task
  *（调用方来提供解析方法，默认：将responseData按bool类型来解析）
+ *（调用方只能设置block）
  */
 @property (nonatomic, copy) XRAnalysisIsCompleteBlock analysisIsCompleteBlock;
 /// 任务完成后自动移除（默认：true）
@@ -34,11 +41,16 @@ typedef BOOL(^XRAnalysisIsCompleteBlock)(id data);
 @property (nonatomic, assign) XRTaskPriority priority;
 /// 任务唯一ID
 @property (nonatomic, strong) NSString *taskID;
-@property (nonatomic, strong) XRTaskScheduler *taskScheduler;
+/// 任务完成时，需要执行的task
+@property (nonatomic, strong) XRTaskScheduler *taskSchedulerWhenCompleted;
 
-/// 尝试执行block
+#pragma mark - Public
+/// 在任务完成时尝试执行block
 /// @param taskBlock 任务block
-- (void)tryToExecuteNextStep:(XRTaskBlock)taskBlock;
+- (void)tryToExecuteTaskBlockWhenCompleted:(XRTaskBlock)taskBlock;
+
+/// 在任务完成时尝试执行taskScheduler
+- (void)tryToExecuteTaskWhenCompleted;
 
 @end
 

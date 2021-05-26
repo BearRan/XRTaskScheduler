@@ -139,11 +139,11 @@
 		097023D1265E81A80021A9F2 /* XRTaskQueue */ = {
 			isa = PBXGroup;
 			children = (
-				097023D2265E81A80021A9F2 /* XRTaskPriorityQueue.h */,
 				097023D3265E81A80021A9F2 /* XRTaskSchedulerProtocol.h */,
-				097023D4265E81A80021A9F2 /* XRTaskOrderQueue.m */,
+				097023D2265E81A80021A9F2 /* XRTaskPriorityQueue.h */,
 				097023D5265E81A80021A9F2 /* XRTaskPriorityQueue.m */,
 				097023D6265E81A80021A9F2 /* XRTaskOrderQueue.h */,
+				097023D4265E81A80021A9F2 /* XRTaskOrderQueue.m */,
 			);
 			path = XRTaskQueue;
 			sourceTree = "<group>";

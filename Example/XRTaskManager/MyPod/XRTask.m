@@ -10,6 +10,11 @@
 
 @interface XRTask()
 
+/**
+ * task完成时的block
+ * （调用方只能执行）
+ */
+@property (nonatomic, copy, readwrite) XRTaskCompleteBlock taskCompleteBlock;
 /// block生成的返回数据
 @property (nonatomic, strong, readwrite) id responseData;
 
@@ -26,9 +31,9 @@
         self.taskCompleteBlock = ^(id  _Nonnull data) {
             weakSelf.responseData = data;
             if (weakSelf.analysisIsCompleteBlock) {
-                BOOL isFinish = weakSelf.analysisIsCompleteBlock(data);
-                if (isFinish) {
-                    [weakSelf.taskScheduler startExecute];
+                BOOL isComplete = weakSelf.analysisIsCompleteBlock(data);
+                if (isComplete) {
+                    [weakSelf.taskSchedulerWhenCompleted startExecute];
                 }
             }
         };
@@ -36,32 +41,40 @@
     return self;
 }
 
-/// 尝试执行block
+#pragma mark - Public
+/// 在任务完成时尝试执行block
 /// @param taskBlock 任务block
-- (void)tryToExecuteNextStep:(XRTaskBlock)taskBlock {
+- (void)tryToExecuteTaskBlockWhenCompleted:(XRTaskBlock)taskBlock {
     XRTask *task = [XRTask new];
     task.taskBlock = taskBlock;
-    [self.taskScheduler addTask:task];
+    [self.taskSchedulerWhenCompleted addTask:task];
     
+    [self tryToExecuteTaskWhenCompleted];
+}
+
+/// 在任务完成时尝试执行taskScheduler
+- (void)tryToExecuteTaskWhenCompleted {
     if (self.analysisIsCompleteBlock) {
         /// 尝试根据responseData来解析task是否完成
         if (self.analysisIsCompleteBlock(self.responseData)) {
-            [self.taskScheduler startExecute];
+            [self.taskSchedulerWhenCompleted startExecute];
         } else {
             // 未完成，则会在taskCompleteBlock中执行
         }
     }
 }
 
+
+
 #warning Bear 这里增加task，Scheduler递归添加，导致的死循环的问题的防护
 #pragma Setter & Getter
-- (XRTaskScheduler *)taskScheduler {
-    if (_taskScheduler) {
-        _taskScheduler = [XRTaskScheduler new];
-        _taskScheduler.maxTaskCount = 1;
+- (XRTaskScheduler *)taskSchedulerWhenCompleted {
+    if (_taskSchedulerWhenCompleted) {
+        _taskSchedulerWhenCompleted = [XRTaskScheduler new];
+        _taskSchedulerWhenCompleted.maxTaskCount = 1;
     }
     
-    return _taskScheduler;
+    return _taskSchedulerWhenCompleted;
 }
 
 - (XRAnalysisIsCompleteBlock)analysisIsCompleteBlock {

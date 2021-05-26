@@ -52,7 +52,7 @@
     if (checkIsFinish) {
         /// hud.....
     }
-    [task tryToExecuteNextStep:^{
+    [task tryToExecuteTaskBlockWhenCompleted:^{
         [[QiyuSDK shareInstance] pushToChatRoom];
     }];
 }
