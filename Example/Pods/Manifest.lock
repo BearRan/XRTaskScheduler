@@ -1,0 +1,16 @@
+PODS:
+  - XRTaskManager (0.1.0)
+
+DEPENDENCIES:
+  - XRTaskManager (from `../`)
+
+EXTERNAL SOURCES:
+  XRTaskManager:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  XRTaskManager: ef1ef5474513310b0e55b99fdb253a7402906303
+
+PODFILE CHECKSUM: 06c689a4f46e4968c27234254fe21af3c787787e
+
+COCOAPODS: 1.10.1

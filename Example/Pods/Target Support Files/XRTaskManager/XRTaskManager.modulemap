@@ -1,0 +1,6 @@
+framework module XRTaskManager {
+  umbrella header "XRTaskManager-umbrella.h"
+
+  export *
+  module * { export * }
+}
