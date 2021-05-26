@@ -12,11 +12,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol XRTaskSchedulerProtocol <NSObject>
 
-- (void)addTask:(XRTask *)task;
-- (void)removeTask:(XRTask *)task;
-- (void)removeTaskWithTaskID:(NSString *)taskID;
+- (void)addTask:(XRTask * __nullable)task;
+- (void)removeTask:(XRTask * __nullable)task;
+- (XRTask * __nullable)getTaskWihtTaskID:(NSString * __nullable)taskID;
+- (void)removeTaskWithTaskID:(NSString * __nullable)taskID;
 - (void)clearTasks;
 - (BOOL)taskIsEmpty;
+- (void)startExecute;
 
 @end
 

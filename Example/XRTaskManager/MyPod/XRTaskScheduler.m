@@ -32,6 +32,34 @@
     return self;
 }
 
+- (void)addTask:(XRTask *)task {
+    [self.taskQueue addTask:task];
+}
+
+- (void)removeTask:(XRTask *)task {
+    [self.taskQueue removeTask:task];
+}
+
+- (XRTask *)getTaskWihtTaskID:(NSString *)taskID {
+    return [self.taskQueue getTaskWihtTaskID:taskID];
+}
+
+- (void)removeTaskWithTaskID:(NSString *)taskID {
+    [self.taskQueue removeTaskWithTaskID:taskID];
+}
+
+- (void)clearTasks {
+    [self.taskQueue clearTasks];
+}
+
+- (BOOL)taskIsEmpty {
+    return [self.taskQueue taskIsEmpty];
+}
+
+- (void)startExecute {
+    [self.taskQueue startExecute];
+}
+
 
 #pragma Setter & Getter
 - (id<XRTaskSchedulerProtocol>)taskQueue {
