@@ -108,28 +108,33 @@
 }
 
 - (BOOL)taskIsEmpty {
-    return self.taskArray.count == 0;
+    pthread_mutex_lock(&_lock);
+    BOOL emptyValue = self.taskArray.count == 0;
+    pthread_mutex_unlock(&_lock);
+    
+    return emptyValue;
 }
 
 - (void)startExecute {
-    pthread_mutex_lock(&_lock);
     if ([self taskIsEmpty]) {
-        pthread_mutex_unlock(&_lock);
         return;
     }
     
     XRTask *task;
     if (!self.reverse) {
+        pthread_mutex_lock(&_lock);
         task = [self.taskArray firstObject];
         [self.taskArray removeObjectAtIndex:0];
+        pthread_mutex_unlock(&_lock);
     } else {
+        pthread_mutex_lock(&_lock);
         task = [self.taskArray lastObject];
         [self.taskArray removeLastObject];
+        pthread_mutex_unlock(&_lock);
     }
     if (task.taskBlock) {
         task.taskBlock();
     }
-    pthread_mutex_unlock(&_lock);
 }
 
 #pragma mark - Setter & Getter
