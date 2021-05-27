@@ -9,8 +9,6 @@
 /* Begin PBXBuildFile section */
 		097023DD265E81A80021A9F2 /* XRTaskSchedulerGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 097023CF265E81A80021A9F2 /* XRTaskSchedulerGroup.m */; };
 		097023DE265E81A80021A9F2 /* BearTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 097023D0265E81A80021A9F2 /* BearTest.m */; };
-		097023DF265E81A80021A9F2 /* XRTaskOrderQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 097023D4265E81A80021A9F2 /* XRTaskOrderQueue.m */; };
-		097023E0265E81A80021A9F2 /* XRTaskPriorityQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 097023D5265E81A80021A9F2 /* XRTaskPriorityQueue.m */; };
 		097023E1265E81A80021A9F2 /* XRTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 097023D7265E81A80021A9F2 /* XRTask.m */; };
 		097023E2265E81A80021A9F2 /* QiyuSDK.m in Sources */ = {isa = PBXBuildFile; fileRef = 097023D8265E81A80021A9F2 /* QiyuSDK.m */; };
 		097023E3265E81A80021A9F2 /* XRTaskScheduler.m in Sources */ = {isa = PBXBuildFile; fileRef = 097023D9265E81A80021A9F2 /* XRTaskScheduler.m */; };
@@ -52,11 +50,6 @@
 		097023CE265E81A70021A9F2 /* XRTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XRTask.h; sourceTree = "<group>"; };
 		097023CF265E81A80021A9F2 /* XRTaskSchedulerGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XRTaskSchedulerGroup.m; sourceTree = "<group>"; };
 		097023D0265E81A80021A9F2 /* BearTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BearTest.m; sourceTree = "<group>"; };
-		097023D2265E81A80021A9F2 /* XRTaskPriorityQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XRTaskPriorityQueue.h; sourceTree = "<group>"; };
-		097023D3265E81A80021A9F2 /* XRTaskSchedulerProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XRTaskSchedulerProtocol.h; sourceTree = "<group>"; };
-		097023D4265E81A80021A9F2 /* XRTaskOrderQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XRTaskOrderQueue.m; sourceTree = "<group>"; };
-		097023D5265E81A80021A9F2 /* XRTaskPriorityQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XRTaskPriorityQueue.m; sourceTree = "<group>"; };
-		097023D6265E81A80021A9F2 /* XRTaskOrderQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XRTaskOrderQueue.h; sourceTree = "<group>"; };
 		097023D7265E81A80021A9F2 /* XRTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XRTask.m; sourceTree = "<group>"; };
 		097023D8265E81A80021A9F2 /* QiyuSDK.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QiyuSDK.m; sourceTree = "<group>"; };
 		097023D9265E81A80021A9F2 /* XRTaskScheduler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XRTaskScheduler.m; sourceTree = "<group>"; };
@@ -122,29 +115,16 @@
 		097023CA265E81A70021A9F2 /* MyPod */ = {
 			isa = PBXGroup;
 			children = (
-				097023CB265E81A70021A9F2 /* XRTaskScheduler.h */,
-				097023D9265E81A80021A9F2 /* XRTaskScheduler.m */,
 				097023CC265E81A70021A9F2 /* XRTaskSchedulerEnum.h */,
 				097023DA265E81A80021A9F2 /* XRTaskSchedulerEnum.m */,
+				097023CB265E81A70021A9F2 /* XRTaskScheduler.h */,
+				097023D9265E81A80021A9F2 /* XRTaskScheduler.m */,
 				097023CE265E81A70021A9F2 /* XRTask.h */,
 				097023D7265E81A80021A9F2 /* XRTask.m */,
 				097023DB265E81A80021A9F2 /* XRTaskSchedulerGroup.h */,
 				097023CF265E81A80021A9F2 /* XRTaskSchedulerGroup.m */,
-				097023D1265E81A80021A9F2 /* XRTaskQueue */,
 			);
 			path = MyPod;
-			sourceTree = "<group>";
-		};
-		097023D1265E81A80021A9F2 /* XRTaskQueue */ = {
-			isa = PBXGroup;
-			children = (
-				097023D3265E81A80021A9F2 /* XRTaskSchedulerProtocol.h */,
-				097023D2265E81A80021A9F2 /* XRTaskPriorityQueue.h */,
-				097023D5265E81A80021A9F2 /* XRTaskPriorityQueue.m */,
-				097023D6265E81A80021A9F2 /* XRTaskOrderQueue.h */,
-				097023D4265E81A80021A9F2 /* XRTaskOrderQueue.m */,
-			);
-			path = XRTaskQueue;
 			sourceTree = "<group>";
 		};
 		25C1F388CED97B8BE64B1105 /* Pods */ = {
@@ -423,11 +403,9 @@
 				097023E1265E81A80021A9F2 /* XRTask.m in Sources */,
 				097023E2265E81A80021A9F2 /* QiyuSDK.m in Sources */,
 				6003F59E195388D20070C39A /* XRAppDelegate.m in Sources */,
-				097023E0265E81A80021A9F2 /* XRTaskPriorityQueue.m in Sources */,
 				097023E4265E81A80021A9F2 /* XRTaskSchedulerEnum.m in Sources */,
 				6003F5A7195388D20070C39A /* XRViewController.m in Sources */,
 				097023DD265E81A80021A9F2 /* XRTaskSchedulerGroup.m in Sources */,
-				097023DF265E81A80021A9F2 /* XRTaskOrderQueue.m in Sources */,
 				097023DE265E81A80021A9F2 /* BearTest.m in Sources */,
 				097023E3265E81A80021A9F2 /* XRTaskScheduler.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,

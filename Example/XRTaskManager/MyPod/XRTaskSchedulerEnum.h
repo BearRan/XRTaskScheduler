@@ -10,12 +10,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, XRTaskSchedulerType) {
+    /// 优先级
+    XRTaskSchedulerTypePriority,
     /// 正序
     XRTaskSchedulerTypeSequence,
     /// 倒叙
     XRTaskSchedulerTypeReverse,
-    /// 优先级
-    XRTaskSchedulerTypePriority,
 };
 
 typedef NSInteger XRTaskPriority;

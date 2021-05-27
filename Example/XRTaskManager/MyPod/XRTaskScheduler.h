@@ -19,10 +19,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithSchedulerType:(XRTaskSchedulerType)schedulerType;
 
-- (void)addTask:(XRTask *)task;
-- (void)removeTask:(XRTask *)task;
-- (XRTask *)getTaskWihtTaskID:(NSString *)taskID;
-- (void)removeTaskWithTaskID:(NSString *)taskID;
+- (void)addTask:(XRTask * __nullable)task;
+- (void)removeTask:(XRTask * __nullable)task;
+/// 如果总task数量不是非常大的情况下可以使用，不然查询效率会很低
+- (void)removeTaskWithTaskID:(NSString * __nullable)taskID;
+/// 如果总task数量不是非常大的情况下可以使用，不然查询效率会很低
+- (XRTask * __nullable)getTaskWihtTaskID:(NSString * __nullable)taskID;
 - (void)clearTasks;
 - (BOOL)taskIsEmpty;
 - (void)startExecute;
