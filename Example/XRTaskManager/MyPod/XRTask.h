@@ -43,6 +43,8 @@ typedef BOOL(^XRAnalysisIsCompleteBlock)(id data);
 @property (nonatomic, strong) NSString *taskID;
 /// 任务完成时，需要执行的task
 @property (nonatomic, strong) XRTaskScheduler *taskSchedulerWhenCompleted;
+/// 任务完成后，是否需要缓存（默认：NO）
+@property (nonatomic, assign) BOOL ifNeedCacheWhenCompleted;
 
 #pragma mark - Public
 /// 在任务完成时尝试执行block
