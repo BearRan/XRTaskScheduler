@@ -20,24 +20,26 @@
 - (void)registerSDK {
     XRTask *task = [XRTask new];
     task.taskID = @"Qiyu";
+    task.ifNeedCacheWhenCompleted = YES;
+    task.taskSchedulerWhenCompleted.maxTaskCount = 1;
     __weak typeof(task) weakTask = task;
     /// 添加block方法一
     task.taskBlock = ^{
         BOOL resValue = [[QiyuSDK shareInstance] startInitial];
-        if (weakTask.taskCompleteBlock) {
-            weakTask.taskCompleteBlock(@(resValue));
+        if (weakTask.completeBlock) {
+            weakTask.completeBlock(@(resValue));
         }
     };
     /// 添加block方法二
     task.taskBlock = ^{
         [[QiyuSDK shareInstance] startInitialWithRespBlock:^(BOOL value) {
-            if (weakTask.taskCompleteBlock) {
-                weakTask.taskCompleteBlock(@(value));
+            if (weakTask.completeBlock) {
+                weakTask.completeBlock(@(value));
             }
         }];
     };
     /// 配置解析是否finish
-    task.analysisIsCompleteBlock = ^BOOL(id  _Nonnull data) {
+    task.parseIsComplete = ^BOOL(id  _Nonnull data) {
         if ([data boolValue] == YES) {
             return YES;
         }
@@ -48,7 +50,7 @@
 
 - (void)jumpChatRoom {
     XRTask *task = [self.taskScheduler getTaskWihtTaskID:@"Qiyu"];
-    BOOL checkIsFinish = task.analysisIsCompleteBlock(task.responseData);
+    BOOL checkIsFinish = task.parseIsComplete(task.responseData);
     if (checkIsFinish) {
         /// hud.....
     }

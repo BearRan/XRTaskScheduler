@@ -7,14 +7,20 @@
 
 #import "XRTask.h"
 #import "XRTaskScheduler.h"
+#import <pthread.h>
 
 @interface XRTask()
+{
+    pthread_mutex_t _lock;
+}
 
 /**
  * task完成时的block
  * （调用方只能执行）
  */
-@property (nonatomic, copy, readwrite) XRTaskCompleteBlock taskCompleteBlock;
+@property (nonatomic, copy, readwrite) XRCompleteBlock completeBlock;
+/// 任务状态（默认：Idle）
+@property (nonatomic, assign, readwrite) XRTaskStatus taskStatus;
 /// block生成的返回数据
 @property (nonatomic, strong, readwrite) id responseData;
 
@@ -27,15 +33,21 @@
 {
     self = [super init];
     if (self) {
-        self.removeWhenTaskFinished = YES;
         self.priority = XRTaskPriorityDefault;
         self.ifNeedCacheWhenCompleted = NO;
+        self.taskStatus = XRTaskStatusIdle;
+        
+        pthread_mutexattr_t attr;
+        pthread_mutexattr_init(&attr);
+        pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_NORMAL);
+        pthread_mutex_init(&_lock, &attr);
+        pthread_mutexattr_destroy(&attr);
         
         __weak typeof(self) weakSelf = self;
-        self.taskCompleteBlock = ^(id  _Nonnull data) {
+        self.completeBlock = ^(id  _Nonnull data) {
             weakSelf.responseData = data;
-            if (weakSelf.analysisIsCompleteBlock) {
-                BOOL isComplete = weakSelf.analysisIsCompleteBlock(data);
+            if (weakSelf.parseIsComplete) {
+                BOOL isComplete = weakSelf.parseIsComplete(data);
                 if (isComplete) {
                     [weakSelf.taskSchedulerWhenCompleted startExecute];
                 }
@@ -43,6 +55,11 @@
         };
     }
     return self;
+}
+
+- (void)dealloc
+{
+    pthread_mutex_destroy(&_lock);
 }
 
 #pragma mark - Public
@@ -58,14 +75,38 @@
 
 /// 在任务完成时尝试执行taskScheduler
 - (void)tryToExecuteTaskWhenCompleted {
-    if (self.analysisIsCompleteBlock) {
+    if (self.parseIsComplete) {
         /// 尝试根据responseData来解析task是否完成
-        if (self.analysisIsCompleteBlock(self.responseData)) {
+        if (self.parseIsComplete(self.responseData)) {
             [self.taskSchedulerWhenCompleted startExecute];
         } else {
-            // 未完成，则会在taskCompleteBlock中执行
+            // 未完成，则会在completeBlock中执行
         }
     }
+}
+
+/// 执行任务
+- (void)executeTask {
+    pthread_mutex_lock(&_lock);
+    BOOL needQuite = self.taskStatus != XRTaskStatusIdle;
+    pthread_mutex_unlock(&_lock);
+    
+    if (needQuite) {
+        return;
+    }
+    
+    if (self.taskBlock) {
+        self.taskBlock();
+    }
+}
+
+/// 取消任务
+- (void)cancelTask {
+    pthread_mutex_lock(&_lock);
+    if (self.taskStatus != XRTaskStatusCanceled) {
+        self.taskStatus = XRTaskStatusCanceled;
+    }
+    pthread_mutex_unlock(&_lock);
 }
 
 
@@ -81,9 +122,9 @@
     return _taskSchedulerWhenCompleted;
 }
 
-- (XRAnalysisIsCompleteBlock)analysisIsCompleteBlock {
-    if (!_analysisIsCompleteBlock) {
-        _analysisIsCompleteBlock = ^BOOL(id  _Nonnull data) {
+- (XRParseIsComplete)parseIsComplete {
+    if (!_parseIsComplete) {
+        _parseIsComplete = ^BOOL(id  _Nonnull data) {
             if (data) {
                 return YES;
             }
@@ -91,23 +132,24 @@
         };
     }
     
-    return _analysisIsCompleteBlock;
+    return _parseIsComplete;
 }
 
 - (NSString *)taskID {
     if (!_taskID) {
-        _taskID = [self currentTimeStr];
+        _taskID = [self currentDateStr];
     }
     
     return _taskID;
 }
 
-//获取当前时间戳
-- (NSString *)currentTimeStr{
-    NSDate* date = [NSDate dateWithTimeIntervalSinceNow:0];//获取当前时间0秒后的时间
-    NSTimeInterval time=[date timeIntervalSince1970]*1000;// *1000 是精确到毫秒，不乘就是精确到秒
-    NSString *timeString = [NSString stringWithFormat:@"%.0f", time];
-    return timeString;
+//获取当前时间
+- (NSString *)currentDateStr{
+    NSDate *currentDate = [NSDate date];//获取当前时间，日期
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];// 创建一个时间格式化对象
+    [dateFormatter setDateFormat:@"YYYY/MM/dd hh:mm:ss SS "];//设定时间格式,这里可以设置成自己需要的格式
+    NSString *dateString = [dateFormatter stringFromDate:currentDate];//将时间转化成字符串
+    return dateString;
 }
 
 @end

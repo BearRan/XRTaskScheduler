@@ -7,15 +7,21 @@
 
 #import <Foundation/Foundation.h>
 #import "XRTask.h"
+#import "XRTaskRunLoopConfig.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface XRTaskScheduler : NSObject
 
-/// 基于RunLoop执行
-@property (nonatomic, assign) BOOL executeBaseRunLoop;
-/// 最大任务量（调度策略为XRTaskSchedulerTypePriority时无效）
+/**
+ * runloop配置
+ * （是否依据住线程的runloop执行任务）
+ */
+@property (nonatomic, strong) XRTaskRunLoopConfig *runloopConfig;
+/// 最大任务量（默认：1，调度策略为XRTaskSchedulerTypePriority时无效）
 @property (nonatomic, assign) NSInteger maxTaskCount;
+/// 任务并行数量（默认：1）
+@property (nonatomic, assign) NSInteger concurrentCount;
 
 - (instancetype)initWithSchedulerType:(XRTaskSchedulerType)schedulerType;
 

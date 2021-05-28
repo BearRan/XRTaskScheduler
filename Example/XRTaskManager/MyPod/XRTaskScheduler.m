@@ -8,6 +8,7 @@
 #import "XRTaskScheduler.h"
 #import "XRTaskSchedulerEnum.h"
 #import <pthread.h>
+#import "XRTaskQueueManager.h"
 
 @interface XRTaskScheduler()
 {
@@ -23,6 +24,11 @@
 
 @implementation XRTaskScheduler
 
+- (instancetype)init
+{
+    return [self initWithSchedulerType:XRTaskSchedulerTypeSequence];
+}
+
 /// 初始化
 /// @param schedulerType 任务调度类型
 - (instancetype)initWithSchedulerType:(XRTaskSchedulerType)schedulerType
@@ -30,6 +36,7 @@
     self = [super init];
     if (self) {
         self.schedulerType = schedulerType;
+        self.maxTaskCount = 1;
         
         pthread_mutexattr_t attr;
         pthread_mutexattr_init(&attr);
@@ -44,6 +51,7 @@
 - (void)dealloc
 {
     pthread_mutex_destroy(&_arrayLock);
+    pthread_mutex_destroy(&_dictLock);
 }
 
 - (BOOL)checkIsXRTask:(XRTask * __nullable)task {
@@ -53,10 +61,72 @@
     return NO;
 }
 
-#pragma mark - XRTaskSchedulerProtocol
+#pragma mark - Private
+/// 删除最久远的那个
+- (void)removeRemoteOne {
+    switch (self.schedulerType) {
+        case XRTaskSchedulerTypePriority:
+        case XRTaskSchedulerTypeSequence:
+        {
+            pthread_mutex_lock(&_arrayLock);
+            [self.taskArray removeObjectAtIndex:0];
+            pthread_mutex_unlock(&_arrayLock);
+        }
+            break;
+        case XRTaskSchedulerTypeReverse:
+        {
+            pthread_mutex_lock(&_arrayLock);
+            [self.taskArray removeLastObject];
+            pthread_mutex_unlock(&_arrayLock);
+        }
+            break;
+    }
+}
+
+/// 执行下一个
+- (void)executeNext {
+    if ([self taskIsEmpty]) {
+        return;
+    }
+    
+    XRTask *task;
+    switch (self.schedulerType) {
+        case XRTaskSchedulerTypePriority:
+        case XRTaskSchedulerTypeSequence:
+        {
+            pthread_mutex_lock(&_arrayLock);
+            task = [self.taskArray lastObject];
+            [self.taskArray removeLastObject];
+            pthread_mutex_unlock(&_arrayLock);
+        }
+            break;
+        case XRTaskSchedulerTypeReverse:
+        {
+            pthread_mutex_lock(&_arrayLock);
+            task = [self.taskArray firstObject];
+            [self.taskArray removeObjectAtIndex:0];
+            pthread_mutex_unlock(&_arrayLock);
+        }
+            break;
+    }
+    
+    if (task.ifNeedCacheWhenCompleted) {
+        pthread_mutex_lock(&_dictLock);
+        [self.taskCacheDict setObject:task forKey:task.taskID];
+        pthread_mutex_unlock(&_dictLock);
+    }
+    
+    [task executeTask];
+}
+
+#pragma mark - Public
 - (void)addTask:(XRTask * __nullable)task {
     if (![self checkIsXRTask:task]) {
         return;
+    }
+    
+    while ([self taskCount] >= self.maxTaskCount) {
+        [self removeRemoteOne];
     }
     
     switch (self.schedulerType) {
@@ -146,43 +216,56 @@
     return emptyValue;
 }
 
+- (NSUInteger)taskCount {
+    pthread_mutex_lock(&_arrayLock);
+    NSUInteger count = self.taskArray.count;
+    pthread_mutex_unlock(&_arrayLock);
+    
+    return count;
+}
+
+- (void)startExecute1 {
+    XRTaskBlock block1 = ^{
+        NSLog(@"---start1");
+        [NSThread sleepForTimeInterval:2.0f];
+        NSLog(@"---finish1");
+    };
+    
+    XRTaskBlock block2 = ^{
+        NSLog(@"---start2");
+        [NSThread sleepForTimeInterval:2.0f];
+        NSLog(@"---finish2");
+    };
+    
+    XRTaskBlock block3 = ^{
+        NSLog(@"---start3");
+        [NSThread sleepForTimeInterval:2.0f];
+        NSLog(@"---finish3");
+    };
+    dispatch_queue_t queue = [[XRTaskQueueManager shareInstance] getQueue];
+    dispatch_async(queue, ^{
+        block1();
+        block2();
+        block3();
+    });
+}
+
 - (void)startExecute {
     if ([self taskIsEmpty]) {
         return;
     }
     
-    XRTask *task;
-    switch (self.schedulerType) {
-        case XRTaskSchedulerTypePriority:
-        case XRTaskSchedulerTypeSequence:
-        {
-            pthread_mutex_lock(&_arrayLock);
-            task = [self.taskArray lastObject];
-            [self.taskArray removeLastObject];
+    dispatch_queue_t queue = [[XRTaskQueueManager shareInstance] getQueue];
+    dispatch_async(queue, ^{
+        pthread_mutex_lock(&_arrayLock);
+        while (self.taskArray.count > 0) {
             pthread_mutex_unlock(&_arrayLock);
-            
-            pthread_mutex_lock(&_dictLock);
-            [self.taskCacheDict setObject:task forKey:task.taskID];
-            pthread_mutex_unlock(&_dictLock);
-        }
-            break;
-        case XRTaskSchedulerTypeReverse:
-        {
+            [self executeNext];
             pthread_mutex_lock(&_arrayLock);
-            task = [self.taskArray firstObject];
-            [self.taskArray removeObjectAtIndex:0];
-            pthread_mutex_unlock(&_arrayLock);
-            
-            pthread_mutex_lock(&_dictLock);
-            [self.taskCacheDict setObject:task forKey:task.taskID];
-            pthread_mutex_unlock(&_dictLock);
         }
-            break;
-    }
-    
-    if (task.taskBlock) {
-        task.taskBlock();
-    }
+        pthread_mutex_unlock(&_arrayLock);
+        
+    });
 }
 
 #pragma mark - Setter & Getter
@@ -200,6 +283,14 @@
     }
     
     return _taskCacheDict;
+}
+
+- (XRTaskRunLoopConfig *)runloopConfig {
+    if (!_runloopConfig) {
+        _runloopConfig = [XRTaskRunLoopConfig new];
+    }
+    
+    return _runloopConfig;
 }
 
 @end
