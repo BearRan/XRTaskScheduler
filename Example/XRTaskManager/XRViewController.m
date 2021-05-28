@@ -21,28 +21,44 @@
 {
     [super viewDidLoad];
 	
-    [self addTestTaskWithIndex:0];
-    [self addTestTaskWithIndex:1];
-    [self addTestTaskWithIndex:2];
+    /// 正序测试
+//    [self testSequence];
+    
+    /// 倒序测试
+    [self testReverse];
+}
+
+/// 正序测试
+- (void)testSequence {
+    for (int i = 0; i < 3; i++) {
+        [self.taskScheduler addTask:[self generateTestTaskWithIndex:i]];
+    }
     [self.taskScheduler startExecute];
 }
 
-- (void)addTestTaskWithIndex:(NSInteger)index {
+/// 倒序测试
+- (void)testReverse {
+    for (int i = 0; i < 3; i++) {
+        [self.taskScheduler addTask:[self generateTestTaskWithIndex:i]];
+    }
+    self.taskScheduler.schedulerType = XRTaskSchedulerTypeReverse;
+    [self.taskScheduler startExecute];
+}
+
+
+- (XRTask *)generateTestTaskWithIndex:(NSInteger)index {
     XRTask *task = [XRTask new];
+    task.customData = [NSString stringWithFormat:@"task-%ld", (long)index];
     task.taskBlock = ^{
         NSLog(@"---start%ld", (long)index);
         [NSThread sleepForTimeInterval:2.0f];
         NSLog(@"---finish%ld", (long)index);
     };
-    [self.taskScheduler addTask:task];
+    
+    return task;
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
+#pragma mark - Setter & Getter
 - (XRTaskScheduler *)taskScheduler {
     if (!_taskScheduler) {
         _taskScheduler = [XRTaskScheduler new];

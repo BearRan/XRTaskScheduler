@@ -13,12 +13,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface XRTaskScheduler : NSObject
 
+/// 任务执行顺序
+@property (nonatomic, assign) XRTaskSchedulerType schedulerType;
 /**
  * runloop配置
  * （是否依据住线程的runloop执行任务）
  */
 @property (nonatomic, strong) XRTaskRunLoopConfig *runloopConfig;
-/// 最大任务量（默认：1，调度策略为XRTaskSchedulerTypePriority时无效）
+/// 最大任务量（默认：-1，表示不限数量。调度策略为XRTaskSchedulerTypePriority时无效）
 @property (nonatomic, assign) NSInteger maxTaskCount;
 /// 任务并行数量（默认：1）
 @property (nonatomic, assign) NSInteger concurrentCount;

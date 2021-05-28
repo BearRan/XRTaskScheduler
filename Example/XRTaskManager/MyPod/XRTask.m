@@ -60,6 +60,7 @@
 - (void)dealloc
 {
     pthread_mutex_destroy(&_lock);
+    NSLog(@"--task dealloc:%@", self.customData);
 }
 
 #pragma mark - Public

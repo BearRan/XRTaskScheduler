@@ -48,6 +48,8 @@ typedef NS_ENUM(NSInteger, XRTaskStatus) {
 @property (nonatomic, assign, readonly) XRTaskStatus taskStatus;
 /// block生成的返回数据
 @property (nonatomic, strong, readonly) id responseData;
+/// 自定义数据（没有任何作用，调用方可以把一些自定义信息存在这里）
+@property (nonatomic, strong) id customData;
 /// 只在XRTaskSchedulerTypePriority类型的任务中生效（默认：XRTaskPriorityDefault）
 @property (nonatomic, assign) XRTaskPriority priority;
 /// 任务唯一ID

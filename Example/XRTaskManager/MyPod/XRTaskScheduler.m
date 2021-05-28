@@ -16,7 +16,6 @@
     pthread_mutex_t _dictLock;
 }
 
-@property (nonatomic, assign) XRTaskSchedulerType schedulerType;
 @property (nonatomic, strong) NSMutableArray <XRTask *> *taskArray;
 @property (nonatomic, strong) NSMutableDictionary <NSString *, XRTask *> *taskCacheDict;
 
@@ -36,7 +35,7 @@
     self = [super init];
     if (self) {
         self.schedulerType = schedulerType;
-        self.maxTaskCount = 1;
+        self.maxTaskCount = -1;
         
         pthread_mutexattr_t attr;
         pthread_mutexattr_init(&attr);
@@ -95,16 +94,16 @@
         case XRTaskSchedulerTypeSequence:
         {
             pthread_mutex_lock(&_arrayLock);
-            task = [self.taskArray lastObject];
-            [self.taskArray removeLastObject];
+            task = [self.taskArray firstObject];
+            [self.taskArray removeObjectAtIndex:0];
             pthread_mutex_unlock(&_arrayLock);
         }
             break;
         case XRTaskSchedulerTypeReverse:
         {
             pthread_mutex_lock(&_arrayLock);
-            task = [self.taskArray firstObject];
-            [self.taskArray removeObjectAtIndex:0];
+            task = [self.taskArray lastObject];
+            [self.taskArray removeLastObject];
             pthread_mutex_unlock(&_arrayLock);
         }
             break;
@@ -125,8 +124,10 @@
         return;
     }
     
-    while ([self taskCount] >= self.maxTaskCount) {
-        [self removeRemoteOne];
+    if (self.maxTaskCount >= 0) {
+        while ([self taskCount] >= self.maxTaskCount) {
+            [self removeRemoteOne];
+        }
     }
     
     switch (self.schedulerType) {
