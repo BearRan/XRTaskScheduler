@@ -12,7 +12,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef void(^XRCompleteBlock)(id __nullable data);
-typedef void(^XRTaskBlock)(XRTask *task, XRCompleteBlock completeBlock);
+typedef void(^XRTaskBlock)(XRTask *task, XRCompleteBlock completeBlock, NSInteger retryCount);
 typedef BOOL(^XRParseIsComplete)(id data);
 
 typedef NS_ENUM(NSInteger, XRTaskStatus) {
@@ -39,6 +39,8 @@ typedef NS_ENUM(NSInteger, XRTaskStatus) {
 @property (nonatomic, assign) BOOL ifNeedCacheWhenCompleted;
 /// 是否允许执行下一个任务（默认：YES）
 @property (nonatomic, assign) BOOL allowExecuteNext;
+/// 任务失败后，重试次数（默认：0）
+@property (nonatomic, assign) NSInteger maxRetryCount;
 
 #pragma mark Block型参数
 /**

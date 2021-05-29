@@ -40,34 +40,31 @@
     task.ifNeedCacheWhenCompleted = YES;
     task.taskSchedulerWhenCompleted.maxTaskCount = 1;
     task.customData = @"allowNext";
+    task.maxRetryCount = 3;
     /// 添加block方法一
-    task.taskBlock = ^(XRTask * _Nonnull task, XRCompleteBlock  _Nonnull completeBlock) {
-        BOOL resValue = [[QiyuSDK shareInstance] startInitial];
-        if ([(NSString *)task.customData isEqualToString:@"allowNext"]) {
-            task.allowExecuteNext = YES;
-        } else {
-            task.allowExecuteNext = NO;
-        }
-        
-        if (completeBlock) {
-            completeBlock(@(resValue));
-        }
-    };
-//    /// 添加block方法二
-//    task.taskBlock = ^(XRTask * _Nonnull task, XRCompleteBlock  _Nonnull completeBlock) {
-//        [[QiyuSDK shareInstance] startInitialWithRespBlock:^(BOOL value) {
-//            if ([(NSString *)task.customData isEqualToString:@"allowNext"]) {
-//                task.allowExecuteNext = YES;
-//            } else {
-//                task.allowExecuteNext = NO;
-//            }
-//            if (completeBlock) {
-//                completeBlock(@(value));
-//            }
+//    task.taskBlock = ^(XRTask * _Nonnull task, XRCompleteBlock  _Nonnull completeBlock, NSInteger retryCount) {
+//        BOOL resValue = [[QiyuSDK shareInstance] startInitial];
+//        if ([(NSString *)task.customData isEqualToString:@"allowNext"]) {
+//            task.allowExecuteNext = YES;
+//        } else {
+//            task.allowExecuteNext = NO;
+//        }
 //
-//            [self delayResumeTask];
-//        }];
+//        if (completeBlock) {
+//            completeBlock(@(resValue));
+//        }
 //    };
+    /// 添加block方法二
+    task.taskBlock = ^(XRTask * _Nonnull task, XRCompleteBlock  _Nonnull completeBlock, NSInteger retryCount) {
+        [[QiyuSDK shareInstance] startInitialWithRespBlock:^(BOOL value) {
+            task.allowExecuteNext = task.parseIsComplete(@(value));
+            if (completeBlock) {
+                completeBlock(@(value));
+            }
+
+//            [self delayResumeTask];
+        }];
+    };
     /// 配置解析是否finish
     task.parseIsComplete = ^BOOL(id  _Nonnull data) {
         if ([data boolValue] == YES) {

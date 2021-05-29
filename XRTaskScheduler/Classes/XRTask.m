@@ -27,6 +27,9 @@
 @property (nonatomic, strong, readwrite) NSString *createDate;
 /// 为了将task异步转为同步
 @property (nonatomic, strong) dispatch_semaphore_t responseSemaphore;
+/// 当前重试次数
+@property (nonatomic, assign) NSInteger currentRetryCount;
+
 
 @end
 
@@ -43,6 +46,8 @@
         self.taskStatus = XRTaskStatusIdle;
         self.createDate = [self currentDateStr];
         self.responseSemaphore = dispatch_semaphore_create(0);
+        self.currentRetryCount = 0;
+        self.maxRetryCount = 0;
         
         pthread_mutexattr_t attr;
         pthread_mutexattr_init(&attr);
@@ -52,18 +57,36 @@
         
         __weak typeof(self) weakSelf = self;
         self.completeBlock = ^(id  _Nonnull data) {
-#warning Bear 这里想一下complete是否应该放这里
-            [weakSelf setCompleteStatus];
-            
             weakSelf.responseData = data;
             if (weakSelf.parseIsComplete) {
                 BOOL isComplete = weakSelf.parseIsComplete(data);
                 if (isComplete) {
+                    /// 成功，
+                    [weakSelf setCompleteStatus];
+                    /// 执行taskSchedulerWhenCompleted
                     [weakSelf.taskSchedulerWhenCompleted startExecute];
+                    
+                    dispatch_semaphore_signal(weakSelf.responseSemaphore);
+                } else {
+                    if (weakSelf.maxRetryCount > 0) {
+                        /// 失败，尝试重试
+                        if (weakSelf.currentRetryCount < weakSelf.maxRetryCount) {
+                            NSLog(@"---task retry");
+                            weakSelf.currentRetryCount++;
+                            
+                            /// 重制状态，重新执行任务
+                            [weakSelf setIdleStatus];
+                            [weakSelf executeTaskIsRetry:YES];
+                        } else {
+                            NSLog(@"---task retry finish");
+                            dispatch_semaphore_signal(weakSelf.responseSemaphore);
+                        }
+                    } else {
+                        /// 无需重试，错误也可结束
+                        dispatch_semaphore_signal(weakSelf.responseSemaphore);
+                    }
                 }
             }
-            
-            dispatch_semaphore_signal(weakSelf.responseSemaphore);
         };
     }
     return self;
@@ -78,6 +101,12 @@
 - (void)setCompleteStatus {
     pthread_mutex_lock(&_lock);
     self.taskStatus = XRTaskStatusCompleted;
+    pthread_mutex_unlock(&_lock);
+}
+
+- (void)setIdleStatus {
+    pthread_mutex_lock(&_lock);
+    self.taskStatus = XRTaskStatusIdle;
     pthread_mutex_unlock(&_lock);
 }
 
@@ -106,6 +135,11 @@
 
 /// 执行任务
 - (void)executeTask {
+    [self executeTaskIsRetry:NO];
+}
+
+/// 执行任务
+- (void)executeTaskIsRetry:(BOOL)isRetry {
     pthread_mutex_lock(&_lock);
     BOOL needQuite = self.taskStatus != XRTaskStatusIdle;
     if (needQuite) {
@@ -116,9 +150,12 @@
     pthread_mutex_unlock(&_lock);
     
     if (self.taskBlock) {
-        self.taskBlock(self, self.completeBlock);
+        self.taskBlock(self, self.completeBlock, self.currentRetryCount);
 #warning Bear 超时时间加一下
-        dispatch_semaphore_wait(self.responseSemaphore, DISPATCH_TIME_FOREVER);
+        if (!isRetry) {
+            /// 常规调用的话要加锁，为了异步转同步。
+            dispatch_semaphore_wait(self.responseSemaphore, DISPATCH_TIME_FOREVER);
+        }
     }
 }
 

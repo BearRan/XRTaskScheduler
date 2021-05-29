@@ -32,7 +32,7 @@
 - (XRTask *)generateTestTaskWithIndex:(NSInteger)index {
     XRTask *task = [XRTask new];
     task.customData = [NSString stringWithFormat:@"task-%ld", (long)index];
-    task.taskBlock = ^(XRTask * _Nonnull task, XRCompleteBlock  _Nonnull completeBlock) {
+    task.taskBlock = ^(XRTask * _Nonnull task, XRCompleteBlock  _Nonnull completeBlock, NSInteger retryCount) {
         NSLog(@"---task start:%ld thread:%@", (long)index, [NSThread currentThread]);
         [NSThread sleepForTimeInterval:2.0f];
         NSLog(@"---task finish:%ld", (long)index);
