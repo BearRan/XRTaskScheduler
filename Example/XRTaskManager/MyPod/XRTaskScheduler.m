@@ -10,14 +10,29 @@
 #import <pthread.h>
 #import "XRTaskQueueManager.h"
 
+typedef NS_ENUM(NSInteger, XRSchedulerStatus) {
+    /// 空
+    XRSchedulerStatusIdle,
+    /// 尝试执行
+    XRSchedulerStatusTryExecute,
+    /// 执行中
+    XRSchedulerStatusExecuting,
+    /// 暂停
+    XRSchedulerStatusPause,
+    /// 停止
+    XRSchedulerStatusStop,
+};
+
 @interface XRTaskScheduler()
 {
     pthread_mutex_t _arrayLock;
     pthread_mutex_t _dictLock;
+    pthread_mutex_t _statusLock;
 }
 
 @property (nonatomic, strong) NSMutableArray <XRTask *> *taskArray;
 @property (nonatomic, strong) NSMutableDictionary <NSString *, XRTask *> *taskCacheDict;
+@property (nonatomic, assign) XRSchedulerStatus schedulerStatus;
 
 @end
 
@@ -36,12 +51,15 @@
     if (self) {
         self.schedulerType = schedulerType;
         self.maxTaskCount = -1;
+        self.concurrentCount = 1;
+        self.schedulerStatus = XRSchedulerStatusIdle;
         
         pthread_mutexattr_t attr;
         pthread_mutexattr_init(&attr);
         pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_NORMAL);
         pthread_mutex_init(&_arrayLock, &attr);
         pthread_mutex_init(&_dictLock, &attr);
+        pthread_mutex_init(&_statusLock, &attr);
         pthread_mutexattr_destroy(&attr);
     }
     return self;
@@ -118,6 +136,34 @@
     [task executeTask];
 }
 
+#pragma mark tryExecute
+- (void)tryExecute {
+    if ([self taskIsEmpty]) {
+        return;
+    }
+    
+    if (self.schedulerStatus == XRSchedulerStatusTryExecute) {
+        self.schedulerStatus = XRSchedulerStatusExecuting;
+    } else {
+        return;
+    }
+    
+    for (int i = 0; i < self.concurrentCount; i++) {
+        dispatch_queue_t queue = [[XRTaskQueueManager shareInstance] getQueue];
+        dispatch_async(queue, ^{
+            while (![self taskIsEmpty] && self.schedulerStatus == XRSchedulerStatusExecuting) {
+                [self executeNext];
+            }
+            
+            // 走到这里，说明任务执行完了，而不是被停止了。
+            // 所以状态需要重制为TryExecute，方便有任务添加过来时，可以再次执行该防范。
+            if ([self taskIsEmpty] && self.schedulerStatus == XRSchedulerStatusExecuting) {
+                self.schedulerStatus = XRSchedulerStatusTryExecute;
+            }
+        });
+    }
+}
+
 #pragma mark - Public
 - (void)addTask:(XRTask * __nullable)task {
     if (![self checkIsXRTask:task]) {
@@ -125,6 +171,7 @@
     }
     
     if (self.maxTaskCount >= 0) {
+        /// 这里多删一个
         while ([self taskCount] >= self.maxTaskCount) {
             [self removeRemoteOne];
         }
@@ -148,6 +195,8 @@
         }
             break;
     }
+    
+    [self tryExecute];
 }
 
 - (void)removeTask:(XRTask * _Nullable)task {
@@ -203,12 +252,6 @@
     return resTask;
 }
 
-- (void)clearTasks {
-    pthread_mutex_lock(&_arrayLock);
-    [self.taskArray removeAllObjects];
-    pthread_mutex_unlock(&_arrayLock);
-}
-
 - (BOOL)taskIsEmpty {
     pthread_mutex_lock(&_arrayLock);
     BOOL emptyValue = self.taskArray.count == 0;
@@ -225,48 +268,38 @@
     return count;
 }
 
-- (void)startExecute1 {
-    XRTaskBlock block1 = ^{
-        NSLog(@"---start1");
-        [NSThread sleepForTimeInterval:2.0f];
-        NSLog(@"---finish1");
-    };
-    
-    XRTaskBlock block2 = ^{
-        NSLog(@"---start2");
-        [NSThread sleepForTimeInterval:2.0f];
-        NSLog(@"---finish2");
-    };
-    
-    XRTaskBlock block3 = ^{
-        NSLog(@"---start3");
-        [NSThread sleepForTimeInterval:2.0f];
-        NSLog(@"---finish3");
-    };
-    dispatch_queue_t queue = [[XRTaskQueueManager shareInstance] getQueue];
-    dispatch_async(queue, ^{
-        block1();
-        block2();
-        block3();
-    });
-}
-
 - (void)startExecute {
-    if ([self taskIsEmpty]) {
+    if (self.schedulerStatus == XRSchedulerStatusExecuting) {
         return;
     }
     
-    dispatch_queue_t queue = [[XRTaskQueueManager shareInstance] getQueue];
-    dispatch_async(queue, ^{
-        pthread_mutex_lock(&_arrayLock);
-        while (self.taskArray.count > 0) {
-            pthread_mutex_unlock(&_arrayLock);
-            [self executeNext];
-            pthread_mutex_lock(&_arrayLock);
-        }
-        pthread_mutex_unlock(&_arrayLock);
-        
-    });
+    self.schedulerStatus = XRSchedulerStatusTryExecute;
+    
+    [self tryExecute];
+}
+
+- (void)pauseExecute {
+    self.schedulerStatus = XRSchedulerStatusPause;
+}
+
+- (void)resumeExecute {
+    if (self.schedulerStatus == XRSchedulerStatusExecuting) {
+        return;
+    }
+    
+    self.schedulerStatus = XRSchedulerStatusTryExecute;
+    
+    [self tryExecute];
+}
+
+- (void)stopAndClearTasks {
+    pthread_mutex_lock(&_statusLock);
+    self.schedulerStatus = XRSchedulerStatusPause;
+    pthread_mutex_unlock(&_statusLock);
+    
+    pthread_mutex_lock(&_arrayLock);
+    [self.taskArray removeAllObjects];
+    pthread_mutex_unlock(&_arrayLock);
 }
 
 #pragma mark - Setter & Getter
@@ -292,6 +325,32 @@
     }
     
     return _runloopConfig;
+}
+
+@synthesize schedulerStatus = _schedulerStatus;
+- (void)setSchedulerStatus:(XRSchedulerStatus)schedulerStatus {
+    pthread_mutex_lock(&_statusLock);
+    _schedulerStatus = schedulerStatus;
+    pthread_mutex_unlock(&_statusLock);
+}
+
+- (XRSchedulerStatus)schedulerStatus {
+    pthread_mutex_lock(&_statusLock);
+    XRSchedulerStatus tmpStatus = _schedulerStatus;
+    pthread_mutex_unlock(&_statusLock);
+    
+    return tmpStatus;
+}
+
+- (void)setMaxTaskCount:(NSInteger)maxTaskCount {
+    _maxTaskCount = maxTaskCount;
+    
+    if (maxTaskCount >= 0) {
+        /// 这里不用多删一个
+        while ([self taskCount] > maxTaskCount) {
+            [self removeRemoteOne];
+        }
+    }
 }
 
 @end

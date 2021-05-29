@@ -45,6 +45,9 @@
         
         __weak typeof(self) weakSelf = self;
         self.completeBlock = ^(id  _Nonnull data) {
+#warning Bear 这里想一下complete是否应该放这里
+            [weakSelf setCompleteStatus];
+            
             weakSelf.responseData = data;
             if (weakSelf.parseIsComplete) {
                 BOOL isComplete = weakSelf.parseIsComplete(data);
@@ -61,6 +64,12 @@
 {
     pthread_mutex_destroy(&_lock);
     NSLog(@"--task dealloc:%@", self.customData);
+}
+
+- (void)setCompleteStatus {
+    pthread_mutex_lock(&_lock);
+    self.taskStatus = XRTaskStatusCompleted;
+    pthread_mutex_unlock(&_lock);
 }
 
 #pragma mark - Public
@@ -90,11 +99,12 @@
 - (void)executeTask {
     pthread_mutex_lock(&_lock);
     BOOL needQuite = self.taskStatus != XRTaskStatusIdle;
-    pthread_mutex_unlock(&_lock);
-    
     if (needQuite) {
+        pthread_mutex_unlock(&_lock);
         return;
     }
+    self.taskStatus = XRTaskStatusExecuting;
+    pthread_mutex_unlock(&_lock);
     
     if (self.taskBlock) {
         self.taskBlock();

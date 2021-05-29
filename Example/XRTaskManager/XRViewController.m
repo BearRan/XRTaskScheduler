@@ -25,10 +25,16 @@
 //    [self testSequence];
     
     /// 倒序测试
-    [self testReverse];
+//    [self testReverse];
+    
+    /// 并发测试
+//    [self testConcurrent];
+    
+    /// 最大任务量测试
+    [self testMaxTaskCount];
 }
 
-/// 正序测试
+#pragma mark - 正序测试
 - (void)testSequence {
     for (int i = 0; i < 3; i++) {
         [self.taskScheduler addTask:[self generateTestTaskWithIndex:i]];
@@ -36,12 +42,31 @@
     [self.taskScheduler startExecute];
 }
 
-/// 倒序测试
+#pragma mark - 倒序测试
 - (void)testReverse {
     for (int i = 0; i < 3; i++) {
         [self.taskScheduler addTask:[self generateTestTaskWithIndex:i]];
     }
     self.taskScheduler.schedulerType = XRTaskSchedulerTypeReverse;
+    [self.taskScheduler startExecute];
+}
+
+#pragma mark - 并发测试
+- (void)testConcurrent {
+    for (int i = 0; i < 16; i++) {
+        [self.taskScheduler addTask:[self generateTestTaskWithIndex:i]];
+    }
+    self.taskScheduler.concurrentCount = 5;
+    [self.taskScheduler startExecute];
+}
+
+#pragma mark - 最大任务量测试
+- (void)testMaxTaskCount {
+    for (int i = 0; i < 10; i++) {
+        [self.taskScheduler addTask:[self generateTestTaskWithIndex:i]];
+    }
+    self.taskScheduler.schedulerType = XRTaskSchedulerTypeReverse;
+    self.taskScheduler.maxTaskCount = 3;
     [self.taskScheduler startExecute];
 }
 
