@@ -17,6 +17,7 @@
 		0908EDBD266248EC00CF878A /* XRCustomQueueDemoVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 0908EDBC266248EC00CF878A /* XRCustomQueueDemoVC.m */; };
 		0908EDC026627C0900CF878A /* XRProcessCompleteDemoVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 0908EDBF26627C0900CF878A /* XRProcessCompleteDemoVC.m */; };
 		0908EDC326627C7C00CF878A /* QiyuSDK.m in Sources */ = {isa = PBXBuildFile; fileRef = 0908EDC226627C7C00CF878A /* QiyuSDK.m */; };
+		0908EDC626629A9600CF878A /* XRDisposeDemoVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 0908EDC526629A9600CF878A /* XRDisposeDemoVC.m */; };
 		27546FCDC0DF9EF64351FE09 /* Pods_XRTaskScheduler_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D60B1FD93E91E53544FDADD5 /* Pods_XRTaskScheduler_Tests.framework */; };
 		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
@@ -67,6 +68,8 @@
 		0908EDBF26627C0900CF878A /* XRProcessCompleteDemoVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XRProcessCompleteDemoVC.m; sourceTree = "<group>"; };
 		0908EDC126627C7C00CF878A /* QiyuSDK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QiyuSDK.h; sourceTree = "<group>"; };
 		0908EDC226627C7C00CF878A /* QiyuSDK.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QiyuSDK.m; sourceTree = "<group>"; };
+		0908EDC426629A9600CF878A /* XRDisposeDemoVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XRDisposeDemoVC.h; sourceTree = "<group>"; };
+		0908EDC526629A9600CF878A /* XRDisposeDemoVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XRDisposeDemoVC.m; sourceTree = "<group>"; };
 		294E668D7BDFB5A18271F0ED /* XRTaskScheduler.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = XRTaskScheduler.podspec; path = ../XRTaskScheduler.podspec; sourceTree = "<group>"; };
 		36BD3FC2BC1E96B09711BC8C /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		4B8C8825F9B47CC6E5C854D3 /* Pods_XRTaskScheduler_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_XRTaskScheduler_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -151,6 +154,8 @@
 				0908EDBC266248EC00CF878A /* XRCustomQueueDemoVC.m */,
 				0908EDBE26627C0900CF878A /* XRProcessCompleteDemoVC.h */,
 				0908EDBF26627C0900CF878A /* XRProcessCompleteDemoVC.m */,
+				0908EDC426629A9600CF878A /* XRDisposeDemoVC.h */,
+				0908EDC526629A9600CF878A /* XRDisposeDemoVC.m */,
 			);
 			name = XRDemoVC;
 			sourceTree = "<group>";
@@ -434,6 +439,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0908EDC026627C0900CF878A /* XRProcessCompleteDemoVC.m in Sources */,
+				0908EDC626629A9600CF878A /* XRDisposeDemoVC.m in Sources */,
 				0908EDB7266248CB00CF878A /* XRConcurrentDemoVC.m in Sources */,
 				0908EDAE2662464200CF878A /* XRSequenceDemoVC.m in Sources */,
 				0908EDBD266248EC00CF878A /* XRCustomQueueDemoVC.m in Sources */,

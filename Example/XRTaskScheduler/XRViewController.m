@@ -81,7 +81,12 @@
         [self.dataArray addObject:tmpModel];
     }
     
-    
+    {
+        tmpModel = [XRDemoModel new];
+        tmpModel.name = @"绑定生命周期";
+        tmpModel.demoVCName = @"XRDisposeDemoVC";
+        [self.dataArray addObject:tmpModel];
+    }
 }
 
 #pragma mark - UITableViewDelegate
