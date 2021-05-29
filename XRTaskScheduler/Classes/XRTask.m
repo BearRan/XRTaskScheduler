@@ -29,6 +29,10 @@
 @property (nonatomic, strong) dispatch_semaphore_t responseSemaphore;
 /// 当前重试次数
 @property (nonatomic, assign) NSInteger currentRetryCount;
+/// 绑定声明周期的对象（默认：nil）
+@property (nonatomic, weak) id bindDisposeObj;
+/// 是否使用dispose（默认：NO）
+@property (nonatomic, assign) BOOL ifUseDispose;
 
 
 @end
@@ -48,6 +52,7 @@
         self.responseSemaphore = dispatch_semaphore_create(0);
         self.currentRetryCount = 0;
         self.maxRetryCount = 0;
+        self.ifUseDispose = NO;
         
         pthread_mutexattr_t attr;
         pthread_mutexattr_init(&attr);
@@ -168,6 +173,25 @@
     pthread_mutex_unlock(&_lock);
 }
 
+/// 是否可以执行
+- (BOOL)ifCanExecute {
+    if (self.ifUseDispose && !self.bindDisposeObj) {
+        return NO;
+    }
+    
+    return YES;
+}
+
+/// 绑定生命周期
+- (void)disposeBy:(id)bindDisposeObj {
+    if (bindDisposeObj) {
+        self.ifUseDispose = YES;
+        self.bindDisposeObj = bindDisposeObj;
+    } else {
+        self.ifUseDispose = NO;
+        self.bindDisposeObj = nil;
+    }
+}
 
 
 #warning Bear 这里增加task，Scheduler递归添加，导致的死循环的问题的防护

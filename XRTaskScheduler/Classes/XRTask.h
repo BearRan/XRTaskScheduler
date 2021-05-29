@@ -87,6 +87,11 @@ typedef NS_ENUM(NSInteger, XRTaskStatus) {
 /// 取消任务
 - (void)cancelTask;
 
+/// 是否可以执行
+- (BOOL)ifCanExecute;
+/// 绑定生命周期
+- (void)disposeBy:(id)bindDisposeObj;
+
 @end
 
 NS_ASSUME_NONNULL_END

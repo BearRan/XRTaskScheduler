@@ -142,13 +142,15 @@ typedef NS_ENUM(NSInteger, XRSchedulerStatus) {
             break;
     }
     
-    if (task.ifNeedCacheWhenCompleted) {
-        pthread_mutex_lock(&_dictLock);
-        [self.taskCacheDict setObject:task forKey:task.taskID];
-        pthread_mutex_unlock(&_dictLock);
+    if ([task ifCanExecute]) {
+        if (task.ifNeedCacheWhenCompleted) {
+            pthread_mutex_lock(&_dictLock);
+            [self.taskCacheDict setObject:task forKey:task.taskID];
+            pthread_mutex_unlock(&_dictLock);
+        }
+        
+        [task executeTask];
     }
-    
-    [task executeTask];
     
     return task;
 }
