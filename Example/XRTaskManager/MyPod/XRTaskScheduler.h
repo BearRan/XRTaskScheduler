@@ -11,6 +11,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef dispatch_queue_t _Nullable (^XRTaskQueueBlock)(NSInteger index);
+
 @interface XRTaskScheduler : NSObject
 
 /// 任务执行顺序
@@ -24,6 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSInteger maxTaskCount;
 /// 任务并行数量（默认：1）
 @property (nonatomic, assign) NSInteger concurrentCount;
+/// 自定义执行任务所在的队列（默认：nil）
+@property (nonatomic, copy) XRTaskQueueBlock taskQueueBlock;
 
 - (instancetype)initWithSchedulerType:(XRTaskSchedulerType)schedulerType;
 

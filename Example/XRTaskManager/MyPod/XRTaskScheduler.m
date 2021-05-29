@@ -33,6 +33,8 @@ typedef NS_ENUM(NSInteger, XRSchedulerStatus) {
 @property (nonatomic, strong) NSMutableArray <XRTask *> *taskArray;
 @property (nonatomic, strong) NSMutableDictionary <NSString *, XRTask *> *taskCacheDict;
 @property (nonatomic, assign) XRSchedulerStatus schedulerStatus;
+/// 在执行前，是否需要排序
+@property (nonatomic, assign) BOOL ifNeedOrder;
 
 @end
 
@@ -52,7 +54,9 @@ typedef NS_ENUM(NSInteger, XRSchedulerStatus) {
         self.schedulerType = schedulerType;
         self.maxTaskCount = -1;
         self.concurrentCount = 1;
+        self.taskQueueBlock = nil;
         self.schedulerStatus = XRSchedulerStatusIdle;
+        self.ifNeedOrder = YES;
         
         pthread_mutexattr_t attr;
         pthread_mutexattr_init(&attr);
@@ -69,6 +73,7 @@ typedef NS_ENUM(NSInteger, XRSchedulerStatus) {
 {
     pthread_mutex_destroy(&_arrayLock);
     pthread_mutex_destroy(&_dictLock);
+    pthread_mutex_destroy(&_statusLock);
 }
 
 - (BOOL)checkIsXRTask:(XRTask * __nullable)task {
@@ -148,8 +153,23 @@ typedef NS_ENUM(NSInteger, XRSchedulerStatus) {
         return;
     }
     
+    /// 在执行前，统一处理排序
+    /// 优先级模式，并且需要排序
+    if (self.schedulerType == XRTaskSchedulerTypePriority && self.ifNeedOrder == YES) {
+        self.ifNeedOrder = NO;
+//        [self logPriority:NO];
+        /// 排序
+        [self processOrder];
+//        [self logPriority:YES];
+    }
+    
     for (int i = 0; i < self.concurrentCount; i++) {
-        dispatch_queue_t queue = [[XRTaskQueueManager shareInstance] getQueue];
+        dispatch_queue_t queue;
+        if (self.taskQueueBlock) {
+            queue = self.taskQueueBlock(i);
+        } else {        
+            queue = [[XRTaskQueueManager shareInstance] getQueue];
+        }
         dispatch_async(queue, ^{
             while (![self taskIsEmpty] && self.schedulerStatus == XRSchedulerStatusExecuting) {
                 [self executeNext];
@@ -162,6 +182,27 @@ typedef NS_ENUM(NSInteger, XRSchedulerStatus) {
             }
         });
     }
+}
+
+#pragma mark Order
+- (void)processOrder {
+    /// 降序
+    NSSortDescriptor *priorityDesc = [NSSortDescriptor sortDescriptorWithKey:@"priority" ascending:NO];
+    NSSortDescriptor *dataDesc = [NSSortDescriptor sortDescriptorWithKey:@"createDate" ascending:YES];
+    NSArray *tmpArray = [self.taskArray sortedArrayUsingDescriptors:@[priorityDesc, dataDesc]];
+    
+    pthread_mutex_lock(&_arrayLock);
+    [self.taskArray removeAllObjects];
+    [self.taskArray addObjectsFromArray:tmpArray];
+    pthread_mutex_unlock(&_arrayLock);
+}
+
+- (void)logPriority:(BOOL)isOrder {
+    NSLog(@"--start show logPriority isOrder:%@", isOrder ? @"yes" : @"no");
+    for (XRTask *task in self.taskArray) {
+        NSLog(@"--task priority:%ld", (long)task.priority);
+    }
+    NSLog(@"--finish show logPriority isOrder:%@", isOrder ? @"yes" : @"no");
 }
 
 #pragma mark - Public
@@ -180,7 +221,6 @@ typedef NS_ENUM(NSInteger, XRSchedulerStatus) {
     switch (self.schedulerType) {
         case XRTaskSchedulerTypePriority:
         {
-#warning Bear 这里加下排序的逻辑
             pthread_mutex_lock(&_arrayLock);
             [self.taskArray addObject:task];
             pthread_mutex_unlock(&_arrayLock);
@@ -196,6 +236,10 @@ typedef NS_ENUM(NSInteger, XRSchedulerStatus) {
             break;
     }
     
+    /// 优先级模式
+    if (self.schedulerType == XRTaskSchedulerTypePriority) {
+        self.ifNeedOrder = YES;
+    }
     [self tryExecute];
 }
 

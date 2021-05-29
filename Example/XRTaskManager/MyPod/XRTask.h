@@ -7,11 +7,11 @@
 
 #import <Foundation/Foundation.h>
 #import "XRTaskSchedulerEnum.h"
-@class XRTaskScheduler;
+@class XRTaskScheduler, XRTask;
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void(^XRTaskBlock)(void);
+typedef void(^XRTaskBlock)(XRTask *task);
 typedef void(^XRCompleteBlock)(id data);
 typedef BOOL(^XRParseIsComplete)(id data);
 
@@ -58,6 +58,8 @@ typedef NS_ENUM(NSInteger, XRTaskStatus) {
 @property (nonatomic, strong) XRTaskScheduler *taskSchedulerWhenCompleted;
 /// 任务完成后，是否需要缓存（默认：NO）
 @property (nonatomic, assign) BOOL ifNeedCacheWhenCompleted;
+///  task创建时间
+@property (nonatomic, strong, readonly) NSString *createDate;
 
 #pragma mark - Public
 /// 在任务完成时尝试执行block

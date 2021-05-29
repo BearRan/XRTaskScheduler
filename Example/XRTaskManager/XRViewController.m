@@ -27,11 +27,17 @@
     /// 倒序测试
 //    [self testReverse];
     
+    /// 优先级测试
+//    [self testPriority];
+    
     /// 并发测试
 //    [self testConcurrent];
     
     /// 最大任务量测试
-    [self testMaxTaskCount];
+//    [self testMaxTaskCount];
+    
+    /// 指定队列测试
+    [self testCustomQueue];
 }
 
 #pragma mark - 正序测试
@@ -51,6 +57,15 @@
     [self.taskScheduler startExecute];
 }
 
+#pragma mark - 优先级测试
+- (void)testPriority {
+    for (int i = 0; i < 17; i++) {
+        [self.taskScheduler addTask:[self generateTestTaskWithIndex:i]];
+    }
+    self.taskScheduler.schedulerType = XRTaskSchedulerTypePriority;
+    [self.taskScheduler startExecute];
+}
+
 #pragma mark - 并发测试
 - (void)testConcurrent {
     for (int i = 0; i < 16; i++) {
@@ -60,12 +75,26 @@
     [self.taskScheduler startExecute];
 }
 
+#pragma mark - 指定队列测试
+- (void)testCustomQueue {
+    for (int i = 0; i < 16; i++) {
+        [self.taskScheduler addTask:[self generateTestTaskWithIndex:i]];
+    }
+//    dispatch_queue_attr_t attr = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INITIATED, 0);
+    dispatch_queue_t customQueue = dispatch_queue_create("bear custom queue", 0);
+    self.taskScheduler.taskQueueBlock = ^dispatch_queue_t _Nullable(NSInteger index) {
+        return customQueue;
+    };
+    [self.taskScheduler startExecute];
+}
+
 #pragma mark - 最大任务量测试
 - (void)testMaxTaskCount {
     for (int i = 0; i < 10; i++) {
         [self.taskScheduler addTask:[self generateTestTaskWithIndex:i]];
     }
     self.taskScheduler.schedulerType = XRTaskSchedulerTypeReverse;
+    self.taskScheduler.concurrentCount = 2;
     self.taskScheduler.maxTaskCount = 3;
     [self.taskScheduler startExecute];
 }
@@ -74,11 +103,12 @@
 - (XRTask *)generateTestTaskWithIndex:(NSInteger)index {
     XRTask *task = [XRTask new];
     task.customData = [NSString stringWithFormat:@"task-%ld", (long)index];
-    task.taskBlock = ^{
-        NSLog(@"---start%ld", (long)index);
+    task.taskBlock = ^(XRTask * _Nonnull task) {
+        NSLog(@"---start%ld thread", (long)index, [NSThread currentThread]);
         [NSThread sleepForTimeInterval:2.0f];
         NSLog(@"---finish%ld", (long)index);
     };
+    task.priority = arc4random() % 1000;
     
     return task;
 }

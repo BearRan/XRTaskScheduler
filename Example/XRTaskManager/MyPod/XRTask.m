@@ -23,6 +23,8 @@
 @property (nonatomic, assign, readwrite) XRTaskStatus taskStatus;
 /// block生成的返回数据
 @property (nonatomic, strong, readwrite) id responseData;
+///  task创建时间
+@property (nonatomic, strong, readwrite) NSString *createDate;
 
 @end
 
@@ -36,6 +38,7 @@
         self.priority = XRTaskPriorityDefault;
         self.ifNeedCacheWhenCompleted = NO;
         self.taskStatus = XRTaskStatusIdle;
+        self.createDate = [self currentDateStr];
         
         pthread_mutexattr_t attr;
         pthread_mutexattr_init(&attr);
@@ -107,7 +110,7 @@
     pthread_mutex_unlock(&_lock);
     
     if (self.taskBlock) {
-        self.taskBlock();
+        self.taskBlock(self);
     }
 }
 
@@ -148,7 +151,7 @@
 
 - (NSString *)taskID {
     if (!_taskID) {
-        _taskID = [self currentDateStr];
+        _taskID = [NSProcessInfo processInfo].globallyUniqueString;
     }
     
     return _taskID;

@@ -22,19 +22,18 @@
     task.taskID = @"Qiyu";
     task.ifNeedCacheWhenCompleted = YES;
     task.taskSchedulerWhenCompleted.maxTaskCount = 1;
-    __weak typeof(task) weakTask = task;
     /// 添加block方法一
-    task.taskBlock = ^{
+    task.taskBlock = ^(XRTask * _Nonnull task) {
         BOOL resValue = [[QiyuSDK shareInstance] startInitial];
-        if (weakTask.completeBlock) {
-            weakTask.completeBlock(@(resValue));
+        if (task.completeBlock) {
+            task.completeBlock(@(resValue));
         }
     };
     /// 添加block方法二
-    task.taskBlock = ^{
+    task.taskBlock = ^(XRTask * _Nonnull task) {
         [[QiyuSDK shareInstance] startInitialWithRespBlock:^(BOOL value) {
-            if (weakTask.completeBlock) {
-                weakTask.completeBlock(@(value));
+            if (task.completeBlock) {
+                task.completeBlock(@(value));
             }
         }];
     };
@@ -54,7 +53,7 @@
     if (checkIsFinish) {
         /// hud.....
     }
-    [task tryToExecuteTaskBlockWhenCompleted:^{
+    [task tryToExecuteTaskBlockWhenCompleted:^(XRTask * _Nonnull task) {
         [[QiyuSDK shareInstance] pushToChatRoom];
     }];
 }
