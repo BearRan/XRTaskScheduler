@@ -64,10 +64,10 @@ typedef NS_ENUM(NSInteger, XRTaskStatus) {
 #pragma mark - Public
 /// 在任务完成时尝试执行block
 /// @param taskBlock 任务block
-- (void)tryToExecuteTaskBlockWhenCompleted:(XRTaskBlock)taskBlock;
+- (void)tryToExecuteCompletedTaskBlock:(XRTaskBlock)taskBlock;
 
 /// 在任务完成时尝试执行taskScheduler
-- (void)tryToExecuteTaskWhenCompleted;
+- (void)tryToExecuteCompletedScheduler;
 
 /// 执行任务
 - (void)executeTask;

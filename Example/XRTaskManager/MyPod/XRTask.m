@@ -78,16 +78,16 @@
 #pragma mark - Public
 /// 在任务完成时尝试执行block
 /// @param taskBlock 任务block
-- (void)tryToExecuteTaskBlockWhenCompleted:(XRTaskBlock)taskBlock {
+- (void)tryToExecuteCompletedTaskBlock:(XRTaskBlock)taskBlock {
     XRTask *task = [XRTask new];
     task.taskBlock = taskBlock;
     [self.taskSchedulerWhenCompleted addTask:task];
     
-    [self tryToExecuteTaskWhenCompleted];
+    [self tryToExecuteCompletedScheduler];
 }
 
 /// 在任务完成时尝试执行taskScheduler
-- (void)tryToExecuteTaskWhenCompleted {
+- (void)tryToExecuteCompletedScheduler {
     if (self.parseIsComplete) {
         /// 尝试根据responseData来解析task是否完成
         if (self.parseIsComplete(self.responseData)) {
