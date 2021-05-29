@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0908EDA0266084C000CF878A /* XRTaskRunLoopConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 0908ED9F266084C000CF878A /* XRTaskRunLoopConfig.m */; };
 		0908EDA32660EBA300CF878A /* XRTaskQueueManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0908EDA22660EBA300CF878A /* XRTaskQueueManager.m */; };
 		097023DD265E81A80021A9F2 /* XRTaskSchedulerGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 097023CF265E81A80021A9F2 /* XRTaskSchedulerGroup.m */; };
 		097023DE265E81A80021A9F2 /* BearTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 097023D0265E81A80021A9F2 /* BearTest.m */; };
@@ -46,8 +45,6 @@
 
 /* Begin PBXFileReference section */
 		016C98967EBF7FEC05CCD306 /* Pods-XRTaskManager_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XRTaskManager_Tests.debug.xcconfig"; path = "Target Support Files/Pods-XRTaskManager_Tests/Pods-XRTaskManager_Tests.debug.xcconfig"; sourceTree = "<group>"; };
-		0908ED9E266084C000CF878A /* XRTaskRunLoopConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XRTaskRunLoopConfig.h; sourceTree = "<group>"; };
-		0908ED9F266084C000CF878A /* XRTaskRunLoopConfig.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XRTaskRunLoopConfig.m; sourceTree = "<group>"; };
 		0908EDA12660EBA300CF878A /* XRTaskQueueManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XRTaskQueueManager.h; sourceTree = "<group>"; };
 		0908EDA22660EBA300CF878A /* XRTaskQueueManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XRTaskQueueManager.m; sourceTree = "<group>"; };
 		097023CB265E81A70021A9F2 /* XRTaskScheduler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XRTaskScheduler.h; sourceTree = "<group>"; };
@@ -127,8 +124,6 @@
 				0908EDA22660EBA300CF878A /* XRTaskQueueManager.m */,
 				097023CB265E81A70021A9F2 /* XRTaskScheduler.h */,
 				097023D9265E81A80021A9F2 /* XRTaskScheduler.m */,
-				0908ED9E266084C000CF878A /* XRTaskRunLoopConfig.h */,
-				0908ED9F266084C000CF878A /* XRTaskRunLoopConfig.m */,
 				097023CE265E81A70021A9F2 /* XRTask.h */,
 				097023D7265E81A80021A9F2 /* XRTask.m */,
 				097023DB265E81A80021A9F2 /* XRTaskSchedulerGroup.h */,
@@ -417,7 +412,6 @@
 				097023E2265E81A80021A9F2 /* QiyuSDK.m in Sources */,
 				6003F59E195388D20070C39A /* XRAppDelegate.m in Sources */,
 				097023E4265E81A80021A9F2 /* XRTaskSchedulerEnum.m in Sources */,
-				0908EDA0266084C000CF878A /* XRTaskRunLoopConfig.m in Sources */,
 				6003F5A7195388D20070C39A /* XRViewController.m in Sources */,
 				097023DD265E81A80021A9F2 /* XRTaskSchedulerGroup.m in Sources */,
 				097023DE265E81A80021A9F2 /* BearTest.m in Sources */,

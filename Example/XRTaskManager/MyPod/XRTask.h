@@ -28,50 +28,58 @@ typedef NS_ENUM(NSInteger, XRTaskStatus) {
 
 @interface XRTask : NSObject
 
-/**
- * task任务
- *（调用方只能设置block）
- */
-@property (nonatomic, copy) XRTaskBlock taskBlock;
-/**
- * task完成时的block
- *（调用方只能执行block）
- */
-@property (nonatomic, copy, readonly) XRCompleteBlock completeBlock;
-/**
- * 解析如何判定是否完成task
- *（调用方来提供解析方法，默认：将responseData按bool类型来解析）
- *（调用方只能设置block）
- */
-@property (nonatomic, copy) XRParseIsComplete parseIsComplete;
-/// 任务状态（默认：Idle）
-@property (nonatomic, assign, readonly) XRTaskStatus taskStatus;
-/// block生成的返回数据
-@property (nonatomic, strong, readonly) id responseData;
-/// 自定义数据（没有任何作用，调用方可以把一些自定义信息存在这里）
-@property (nonatomic, strong) id customData;
+
+#pragma mark - 配置型参数
 /// 只在XRTaskSchedulerTypePriority类型的任务中生效（默认：XRTaskPriorityDefault）
 @property (nonatomic, assign) XRTaskPriority priority;
 /// 任务唯一ID
 @property (nonatomic, strong) NSString *taskID;
 /// 任务完成时，需要执行的task
 @property (nonatomic, strong) XRTaskScheduler *taskSchedulerWhenCompleted;
-/// 任务完成后，是否需要缓存（默认：NO）
+/// 任务完成后，task是否需要缓存（默认：NO）
 @property (nonatomic, assign) BOOL ifNeedCacheWhenCompleted;
+
+
+#pragma mark - Block型参数
+/**
+ * task任务
+ * block：设置型
+ */
+@property (nonatomic, copy) XRTaskBlock taskBlock;
+/**
+ * task完成时的block
+ * block：执行型
+ */
+@property (nonatomic, copy, readonly) XRCompleteBlock completeBlock;
+/**
+ * 解析如何判定是否完成task
+ *（调用方来提供解析方法，默认：将responseData按bool类型来解析）
+ * block：设置型
+ */
+@property (nonatomic, copy) XRParseIsComplete parseIsComplete;
+
+
+#pragma mark - 只读型参数
+/// 任务状态（默认：Idle）
+@property (nonatomic, assign, readonly) XRTaskStatus taskStatus;
+/// completeBlock生成的返回数据
+@property (nonatomic, strong, readonly) id responseData;
+
+#pragma mark - 其他无关参数
+/// 自定义数据（调用方可以把一些自定义信息存在这里）
+@property (nonatomic, strong) id customData;
 ///  task创建时间
 @property (nonatomic, strong, readonly) NSString *createDate;
+
 
 #pragma mark - Public
 /// 在任务完成时尝试执行block
 /// @param taskBlock 任务block
 - (void)tryToExecuteCompletedTaskBlock:(XRTaskBlock)taskBlock;
-
 /// 在任务完成时尝试执行taskScheduler
 - (void)tryToExecuteCompletedScheduler;
-
 /// 执行任务
 - (void)executeTask;
-
 /// 取消任务
 - (void)cancelTask;
 

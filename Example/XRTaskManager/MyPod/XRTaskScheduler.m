@@ -40,6 +40,16 @@ typedef NS_ENUM(NSInteger, XRSchedulerStatus) {
 
 @implementation XRTaskScheduler
 
++ (instancetype)shareInstance {
+    static XRTaskScheduler *sharedScheduler;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedScheduler = [XRTaskScheduler new];
+    });
+    
+    return sharedScheduler;
+}
+
 - (instancetype)init
 {
     return [self initWithSchedulerType:XRTaskSchedulerTypeSequence];
@@ -361,14 +371,6 @@ typedef NS_ENUM(NSInteger, XRSchedulerStatus) {
     }
     
     return _taskCacheDict;
-}
-
-- (XRTaskRunLoopConfig *)runloopConfig {
-    if (!_runloopConfig) {
-        _runloopConfig = [XRTaskRunLoopConfig new];
-    }
-    
-    return _runloopConfig;
 }
 
 @synthesize schedulerStatus = _schedulerStatus;
