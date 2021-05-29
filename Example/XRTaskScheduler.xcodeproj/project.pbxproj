@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0908EDA626623D8A00CF878A /* XRBaseDemoVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 0908EDA526623D8A00CF878A /* XRBaseDemoVC.m */; };
 		0908EDA926623DAA00CF878A /* XRDemoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0908EDA826623DAA00CF878A /* XRDemoModel.m */; };
+		0908EDAE2662464200CF878A /* XRSequenceDemoVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 0908EDAD2662464200CF878A /* XRSequenceDemoVC.m */; };
 		27546FCDC0DF9EF64351FE09 /* Pods_XRTaskScheduler_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D60B1FD93E91E53544FDADD5 /* Pods_XRTaskScheduler_Tests.framework */; };
 		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
@@ -43,6 +44,8 @@
 		0908EDA526623D8A00CF878A /* XRBaseDemoVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XRBaseDemoVC.m; sourceTree = "<group>"; };
 		0908EDA726623DAA00CF878A /* XRDemoModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XRDemoModel.h; sourceTree = "<group>"; };
 		0908EDA826623DAA00CF878A /* XRDemoModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XRDemoModel.m; sourceTree = "<group>"; };
+		0908EDAC2662464200CF878A /* XRSequenceDemoVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XRSequenceDemoVC.h; sourceTree = "<group>"; };
+		0908EDAD2662464200CF878A /* XRSequenceDemoVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XRSequenceDemoVC.m; sourceTree = "<group>"; };
 		294E668D7BDFB5A18271F0ED /* XRTaskScheduler.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = XRTaskScheduler.podspec; path = ../XRTaskScheduler.podspec; sourceTree = "<group>"; };
 		36BD3FC2BC1E96B09711BC8C /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		4B8C8825F9B47CC6E5C854D3 /* Pods_XRTaskScheduler_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_XRTaskScheduler_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -101,6 +104,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0908EDAA2662462200CF878A /* XRBaseDemoVC */ = {
+			isa = PBXGroup;
+			children = (
+				0908EDA426623D8A00CF878A /* XRBaseDemoVC.h */,
+				0908EDA526623D8A00CF878A /* XRBaseDemoVC.m */,
+			);
+			name = XRBaseDemoVC;
+			sourceTree = "<group>";
+		};
+		0908EDAB2662462800CF878A /* XRDemoVC */ = {
+			isa = PBXGroup;
+			children = (
+				0908EDAC2662464200CF878A /* XRSequenceDemoVC.h */,
+				0908EDAD2662464200CF878A /* XRSequenceDemoVC.m */,
+			);
+			name = XRDemoVC;
+			sourceTree = "<group>";
+		};
 		6003F581195388D10070C39A = {
 			isa = PBXGroup;
 			children = (
@@ -145,8 +166,8 @@
 				6003F5A6195388D20070C39A /* XRViewController.m */,
 				0908EDA726623DAA00CF878A /* XRDemoModel.h */,
 				0908EDA826623DAA00CF878A /* XRDemoModel.m */,
-				0908EDA426623D8A00CF878A /* XRBaseDemoVC.h */,
-				0908EDA526623D8A00CF878A /* XRBaseDemoVC.m */,
+				0908EDAA2662462200CF878A /* XRBaseDemoVC */,
+				0908EDAB2662462800CF878A /* XRDemoVC */,
 				71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */,
 				6003F5A8195388D20070C39A /* Images.xcassets */,
 				6003F594195388D20070C39A /* Supporting Files */,
@@ -377,6 +398,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0908EDAE2662464200CF878A /* XRSequenceDemoVC.m in Sources */,
 				0908EDA626623D8A00CF878A /* XRBaseDemoVC.m in Sources */,
 				6003F59E195388D20070C39A /* XRAppDelegate.m in Sources */,
 				0908EDA926623DAA00CF878A /* XRDemoModel.m in Sources */,

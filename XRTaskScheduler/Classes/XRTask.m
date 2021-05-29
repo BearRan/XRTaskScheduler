@@ -66,7 +66,7 @@
 - (void)dealloc
 {
     pthread_mutex_destroy(&_lock);
-    NSLog(@"--task dealloc:%@", self.customData);
+    NSLog(@"---task dealloc:%@", self.customData);
 }
 
 - (void)setCompleteStatus {

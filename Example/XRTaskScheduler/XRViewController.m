@@ -35,7 +35,7 @@
     {
         tmpModel = [XRDemoModel new];
         tmpModel.name = @"正序测试";
-        tmpModel.demoVCName = @"";
+        tmpModel.demoVCName = @"XRSequenceDemoVC";
         [self.dataArray addObject:tmpModel];
     }
     
@@ -77,7 +77,10 @@
 
 #pragma mark - UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    XRDemoModel *tmpModel = self.dataArray[indexPath.row];
     
+    UIViewController *vc = (UIViewController *)[NSClassFromString(tmpModel.demoVCName) new];
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {

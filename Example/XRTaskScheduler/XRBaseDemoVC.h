@@ -7,10 +7,16 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "XRTaskScheduler.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface XRBaseDemoVC : UIViewController
+
+@property (nonatomic, strong) XRTaskScheduler *taskScheduler;
+
+- (void)startTest;
+- (XRTask *)generateTestTaskWithIndex:(NSInteger)index;
 
 @end
 

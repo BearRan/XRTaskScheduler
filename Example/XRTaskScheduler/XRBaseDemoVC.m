@@ -16,17 +16,33 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    
+    self.view.backgroundColor = [UIColor whiteColor];
+    
+    [self startTest];
 }
 
-/*
-#pragma mark - Navigation
+- (void)startTest {}
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+- (XRTask *)generateTestTaskWithIndex:(NSInteger)index {
+    XRTask *task = [XRTask new];
+    task.customData = [NSString stringWithFormat:@"task-%ld", (long)index];
+    task.taskBlock = ^(XRTask * _Nonnull task) {
+        NSLog(@"---task start:%ld thread:%@", (long)index, [NSThread currentThread]);
+        [NSThread sleepForTimeInterval:2.0f];
+        NSLog(@"---task finish:%ld", (long)index);
+    };
+    task.priority = arc4random() % 1000;
+    
+    return task;
 }
-*/
+
+#pragma mark - Setter & Getter
+- (XRTaskScheduler *)taskScheduler {
+    if (!_taskScheduler) {
+        _taskScheduler = [XRTaskScheduler new];
+    }
+    return _taskScheduler;
+}
 
 @end
