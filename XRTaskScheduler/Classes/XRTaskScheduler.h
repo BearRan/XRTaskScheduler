@@ -21,7 +21,7 @@ typedef dispatch_queue_t _Nullable (^XRTaskQueueBlock)(NSInteger index);
 /// 任务并行数量（默认：1）
 @property (nonatomic, assign) NSInteger concurrentCount;
 /// 自定义执行任务所在的队列（默认：nil）
-@property (nonatomic, copy) XRTaskQueueBlock taskQueueBlock;
+@property (nonatomic, copy) XRTaskQueueBlock getTaskQueueBlock;
 
 + (instancetype)shareInstance;
 - (instancetype)initWithSchedulerType:(XRTaskSchedulerType)schedulerType;

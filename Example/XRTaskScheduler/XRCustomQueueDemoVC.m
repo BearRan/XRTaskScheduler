@@ -22,7 +22,7 @@
         [self.taskScheduler addTask:[self generateTestTaskWithIndex:i]];
     }
     dispatch_queue_t customQueue = dispatch_queue_create("com.bear.custom.queue", NULL);
-    self.taskScheduler.taskQueueBlock = ^dispatch_queue_t _Nullable(NSInteger index) {
+    self.taskScheduler.getTaskQueueBlock = ^dispatch_queue_t _Nullable(NSInteger index) {
         return customQueue;
     };
     [self.taskScheduler startExecute];

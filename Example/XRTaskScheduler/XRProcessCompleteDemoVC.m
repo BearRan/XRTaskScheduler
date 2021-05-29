@@ -26,7 +26,7 @@
         }
     }
     dispatch_queue_t customQueue = dispatch_queue_create("com.bear.custom.queue", NULL);
-    self.taskScheduler.taskQueueBlock = ^dispatch_queue_t _Nullable(NSInteger index) {
+    self.taskScheduler.getTaskQueueBlock = ^dispatch_queue_t _Nullable(NSInteger index) {
         return customQueue;
     };
     [self.taskScheduler startExecute];
@@ -39,34 +39,35 @@
     task.taskID = @"Qiyu";
     task.ifNeedCacheWhenCompleted = YES;
     task.taskSchedulerWhenCompleted.maxTaskCount = 1;
-//    task.customData = @"allowNext";
+    task.customData = @"allowNext";
     /// 添加block方法一
-//    task.taskBlock = ^(XRTask * _Nonnull task) {
-//        BOOL resValue = [[QiyuSDK shareInstance] startInitial];
-//        if (task.completeBlock) {
-//            task.completeBlock(@(resValue));
-//        }
-//        if ([(NSString *)task.customData isEqualToString:@"allowNext"]) {
-//            task.allowExecuteNext = YES;
-//        } else {
-//            task.allowExecuteNext = NO;
-//        }
-//    };
-    /// 添加block方法二
     task.taskBlock = ^(XRTask * _Nonnull task, XRCompleteBlock  _Nonnull completeBlock) {
-        [[QiyuSDK shareInstance] startInitialWithRespBlock:^(BOOL value) {
-            if ([(NSString *)task.customData isEqualToString:@"allowNext"]) {
-                task.allowExecuteNext = YES;
-            } else {
-                task.allowExecuteNext = NO;
-            }
-            if (completeBlock) {
-                completeBlock(@(value));
-            }
-            
-            [self delayResumeTask];
-        }];
+        BOOL resValue = [[QiyuSDK shareInstance] startInitial];
+        if ([(NSString *)task.customData isEqualToString:@"allowNext"]) {
+            task.allowExecuteNext = YES;
+        } else {
+            task.allowExecuteNext = NO;
+        }
+        
+        if (completeBlock) {
+            completeBlock(@(resValue));
+        }
     };
+//    /// 添加block方法二
+//    task.taskBlock = ^(XRTask * _Nonnull task, XRCompleteBlock  _Nonnull completeBlock) {
+//        [[QiyuSDK shareInstance] startInitialWithRespBlock:^(BOOL value) {
+//            if ([(NSString *)task.customData isEqualToString:@"allowNext"]) {
+//                task.allowExecuteNext = YES;
+//            } else {
+//                task.allowExecuteNext = NO;
+//            }
+//            if (completeBlock) {
+//                completeBlock(@(value));
+//            }
+//
+//            [self delayResumeTask];
+//        }];
+//    };
     /// 配置解析是否finish
     task.parseIsComplete = ^BOOL(id  _Nonnull data) {
         if ([data boolValue] == YES) {

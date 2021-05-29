@@ -64,7 +64,7 @@ typedef NS_ENUM(NSInteger, XRSchedulerStatus) {
         self.schedulerType = schedulerType;
         self.maxTaskCount = -1;
         self.concurrentCount = 1;
-        self.taskQueueBlock = nil;
+        self.getTaskQueueBlock = nil;
         self.schedulerStatus = XRSchedulerStatusIdle;
         self.ifNeedOrder = YES;
         
@@ -177,8 +177,8 @@ typedef NS_ENUM(NSInteger, XRSchedulerStatus) {
     
     for (int i = 0; i < self.concurrentCount; i++) {
         dispatch_queue_t queue;
-        if (self.taskQueueBlock) {
-            queue = self.taskQueueBlock(i);
+        if (self.getTaskQueueBlock) {
+            queue = self.getTaskQueueBlock(i);
         } else {        
             queue = [[XRTaskQueueManager shareInstance] getQueue];
         }

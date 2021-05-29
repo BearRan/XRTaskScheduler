@@ -18,7 +18,7 @@
  * task完成时的block
  * （调用方只能执行）
  */
-@property (nonatomic, copy, readwrite) XRCompleteBlock completeBlock;
+@property (nonatomic, copy) XRCompleteBlock completeBlock;
 /// 任务状态（默认：Idle）
 @property (nonatomic, assign, readwrite) XRTaskStatus taskStatus;
 /// block生成的返回数据
@@ -117,6 +117,7 @@
     
     if (self.taskBlock) {
         self.taskBlock(self, self.completeBlock);
+#warning Bear 超时时间加一下
         dispatch_semaphore_wait(self.responseSemaphore, DISPATCH_TIME_FOREVER);
     }
 }

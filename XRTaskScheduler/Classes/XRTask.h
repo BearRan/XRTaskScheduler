@@ -44,13 +44,13 @@ typedef NS_ENUM(NSInteger, XRTaskStatus) {
 /**
  * task任务
  * block：设置型
+ * 注意：任务执行完成后，一定要执行completeBlock() ！！！！！！！！！！！！！！！。
+ * 因为，taskSchedulerWhenCompleted，block中异步转同步，responseData。都依赖于completeBlock！
  */
+#warning Bear 不过还是可以优化的。可以捕获block。
+// 必须：block中异步转同步。
+// 可选：taskSchedulerWhenCompleted，responseData
 @property (nonatomic, copy) XRTaskBlock taskBlock;
-/**
- * task完成时的block
- * block：执行型
- */
-@property (nonatomic, copy, readonly) XRCompleteBlock completeBlock;
 /**
  * 解析如何判定是否完成task
  *（调用方来提供解析方法，默认：将responseData按bool类型来解析）
