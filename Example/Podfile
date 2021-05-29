@@ -2,10 +2,10 @@ use_frameworks!
 
 platform :ios, '9.0'
 
-target 'XRTaskManager_Example' do
-  pod 'XRTaskManager', :path => '../'
+target 'XRTaskScheduler_Example' do
+  pod 'XRTaskScheduler', :path => '../'
 
-  target 'XRTaskManager_Tests' do
+  target 'XRTaskScheduler_Tests' do
     inherit! :search_paths
 
     

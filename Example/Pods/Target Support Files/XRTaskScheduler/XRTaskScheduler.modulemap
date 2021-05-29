@@ -1,0 +1,6 @@
+framework module XRTaskScheduler {
+  umbrella header "XRTaskScheduler-umbrella.h"
+
+  export *
+  module * { export * }
+}

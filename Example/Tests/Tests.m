@@ -1,8 +1,8 @@
 //
-//  XRTaskManagerTests.m
-//  XRTaskManagerTests
+//  XRTaskSchedulerTests.m
+//  XRTaskSchedulerTests
 //
-//  Created by Bear on 05/26/2021.
+//  Created by Bear on 05/29/2021.
 //  Copyright (c) 2021 Bear. All rights reserved.
 //
 

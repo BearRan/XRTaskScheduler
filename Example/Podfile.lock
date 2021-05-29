@@ -1,16 +1,16 @@
 PODS:
-  - XRTaskManager (0.1.0)
+  - XRTaskScheduler (0.1.0)
 
 DEPENDENCIES:
-  - XRTaskManager (from `../`)
+  - XRTaskScheduler (from `../`)
 
 EXTERNAL SOURCES:
-  XRTaskManager:
+  XRTaskScheduler:
     :path: "../"
 
 SPEC CHECKSUMS:
-  XRTaskManager: ef1ef5474513310b0e55b99fdb253a7402906303
+  XRTaskScheduler: 6c7332ec91029c5a5325912df1e5710815c47ef4
 
-PODFILE CHECKSUM: 06c689a4f46e4968c27234254fe21af3c787787e
+PODFILE CHECKSUM: 4e62230728cc85aa5a2ea6a36e3ff4d7563c6931
 
 COCOAPODS: 1.10.1
