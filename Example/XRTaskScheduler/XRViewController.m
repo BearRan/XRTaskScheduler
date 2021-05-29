@@ -42,35 +42,35 @@
     {
         tmpModel = [XRDemoModel new];
         tmpModel.name = @"倒序测试";
-        tmpModel.demoVCName = @"";
+        tmpModel.demoVCName = @"XRReverseDemoVC";
         [self.dataArray addObject:tmpModel];
     }
     
     {
         tmpModel = [XRDemoModel new];
         tmpModel.name = @"优先级测试";
-        tmpModel.demoVCName = @"";
+        tmpModel.demoVCName = @"XRPriorityDemoVC";
         [self.dataArray addObject:tmpModel];
     }
     
     {
         tmpModel = [XRDemoModel new];
         tmpModel.name = @"并发测试";
-        tmpModel.demoVCName = @"";
+        tmpModel.demoVCName = @"XRConcurrentDemoVC";
         [self.dataArray addObject:tmpModel];
     }
     
     {
         tmpModel = [XRDemoModel new];
         tmpModel.name = @"最大任务量测试";
-        tmpModel.demoVCName = @"";
+        tmpModel.demoVCName = @"XRMaxTaskCountDemoVC";
         [self.dataArray addObject:tmpModel];
     }
     
     {
         tmpModel = [XRDemoModel new];
         tmpModel.name = @"指定队列测试";
-        tmpModel.demoVCName = @"";
+        tmpModel.demoVCName = @"XRCustomQueueDemoVC";
         [self.dataArray addObject:tmpModel];
     }
 }
@@ -80,6 +80,7 @@
     XRDemoModel *tmpModel = self.dataArray[indexPath.row];
     
     UIViewController *vc = (UIViewController *)[NSClassFromString(tmpModel.demoVCName) new];
+    vc.title = tmpModel.name;
     [self.navigationController pushViewController:vc animated:YES];
 }
 
