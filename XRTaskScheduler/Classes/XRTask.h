@@ -37,6 +37,8 @@ typedef NS_ENUM(NSInteger, XRTaskStatus) {
 @property (nonatomic, strong) XRTaskScheduler *taskSchedulerWhenCompleted;
 /// 任务完成后，task是否需要缓存（默认：NO）
 @property (nonatomic, assign) BOOL ifNeedCacheWhenCompleted;
+/// 是否允许执行下一个任务（默认：YES）
+@property (nonatomic, assign) BOOL allowExecuteNext;
 
 #pragma mark Block型参数
 /**

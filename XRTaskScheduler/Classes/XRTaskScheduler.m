@@ -116,9 +116,9 @@ typedef NS_ENUM(NSInteger, XRSchedulerStatus) {
 }
 
 /// 执行下一个
-- (void)executeNext {
+- (XRTask * __nullable)executeNext {
     if ([self taskIsEmpty]) {
-        return;
+        return nil;
     }
     
     XRTask *task;
@@ -149,6 +149,8 @@ typedef NS_ENUM(NSInteger, XRSchedulerStatus) {
     }
     
     [task executeTask];
+    
+    return task;
 }
 
 #pragma mark tryExecute
@@ -180,14 +182,23 @@ typedef NS_ENUM(NSInteger, XRSchedulerStatus) {
         } else {        
             queue = [[XRTaskQueueManager shareInstance] getQueue];
         }
+        
+        __block XRTask *task;
         dispatch_async(queue, ^{
             while (![self taskIsEmpty] && self.schedulerStatus == XRSchedulerStatusExecuting) {
-                [self executeNext];
+                task = [self executeNext];
+                
+                /// 判断是否允许执行下一个任务
+                if (task && !task.allowExecuteNext) {
+                    NSLog(@"---task中断，不允许执行下一个task");
+                    task = nil;
+                    break;
+                }
+                task = nil;
             }
             
-            // 走到这里，说明任务执行完了，而不是被停止了。
-            // 所以状态需要重制为TryExecute，方便有任务添加过来时，可以再次执行该防范。
-            if ([self taskIsEmpty] && self.schedulerStatus == XRSchedulerStatusExecuting) {
+            // 状态需要重制为TryExecute，方便有任务添加过来时，可以再次执行该防范。
+            if (self.schedulerStatus == XRSchedulerStatusExecuting) {
                 self.schedulerStatus = XRSchedulerStatusTryExecute;
             }
         });
@@ -341,15 +352,14 @@ typedef NS_ENUM(NSInteger, XRSchedulerStatus) {
         return;
     }
     
+    NSLog(@"---task继续执行");
     self.schedulerStatus = XRSchedulerStatusTryExecute;
     
     [self tryExecute];
 }
 
 - (void)stopAndClearTasks {
-    pthread_mutex_lock(&_statusLock);
     self.schedulerStatus = XRSchedulerStatusPause;
-    pthread_mutex_unlock(&_statusLock);
     
     pthread_mutex_lock(&_arrayLock);
     [self.taskArray removeAllObjects];

@@ -73,6 +73,15 @@
         tmpModel.demoVCName = @"XRCustomQueueDemoVC";
         [self.dataArray addObject:tmpModel];
     }
+    
+    {
+        tmpModel = [XRDemoModel new];
+        tmpModel.name = @"任务完成后，自定义后一个task是否执行";
+        tmpModel.demoVCName = @"XRProcessCompleteDemoVC";
+        [self.dataArray addObject:tmpModel];
+    }
+    
+    
 }
 
 #pragma mark - UITableViewDelegate

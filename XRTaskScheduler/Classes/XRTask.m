@@ -37,6 +37,7 @@
     if (self) {
         self.priority = XRTaskPriorityDefault;
         self.ifNeedCacheWhenCompleted = NO;
+        self.allowExecuteNext = YES;
         self.taskStatus = XRTaskStatusIdle;
         self.createDate = [self currentDateStr];
         

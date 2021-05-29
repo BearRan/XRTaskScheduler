@@ -22,6 +22,11 @@
     [self startTest];
 }
 
+- (void)dealloc
+{
+    [self.taskScheduler stopAndClearTasks];
+}
+
 - (void)startTest {}
 
 - (XRTask *)generateTestTaskWithIndex:(NSInteger)index {

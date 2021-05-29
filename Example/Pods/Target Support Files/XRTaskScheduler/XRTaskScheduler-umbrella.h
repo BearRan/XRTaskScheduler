@@ -14,7 +14,6 @@
 #import "XRTaskQueueManager.h"
 #import "XRTaskScheduler.h"
 #import "XRTaskSchedulerEnum.h"
-#import "XRTaskSchedulerGroup.h"
 
 FOUNDATION_EXPORT double XRTaskSchedulerVersionNumber;
 FOUNDATION_EXPORT const unsigned char XRTaskSchedulerVersionString[];
