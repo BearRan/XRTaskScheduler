@@ -53,24 +53,19 @@
 //        }
 //    };
     /// 添加block方法二
-    task.taskBlock = ^(XRTask * _Nonnull task) {
-        dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-        
+    task.taskBlock = ^(XRTask * _Nonnull task, XRCompleteBlock  _Nonnull completeBlock) {
         [[QiyuSDK shareInstance] startInitialWithRespBlock:^(BOOL value) {
             if ([(NSString *)task.customData isEqualToString:@"allowNext"]) {
                 task.allowExecuteNext = YES;
             } else {
                 task.allowExecuteNext = NO;
             }
-            if (task.completeBlock) {
-                task.completeBlock(@(value));
+            if (completeBlock) {
+                completeBlock(@(value));
             }
-            
-            dispatch_semaphore_signal(semaphore);
             
             [self delayResumeTask];
         }];
-        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
     };
     /// 配置解析是否finish
     task.parseIsComplete = ^BOOL(id  _Nonnull data) {

@@ -11,8 +11,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void(^XRTaskBlock)(XRTask *task);
-typedef void(^XRCompleteBlock)(id data);
+typedef void(^XRCompleteBlock)(id __nullable data);
+typedef void(^XRTaskBlock)(XRTask *task, XRCompleteBlock completeBlock);
 typedef BOOL(^XRParseIsComplete)(id data);
 
 typedef NS_ENUM(NSInteger, XRTaskStatus) {

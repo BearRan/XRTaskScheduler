@@ -25,6 +25,8 @@
 @property (nonatomic, strong, readwrite) id responseData;
 ///  task创建时间
 @property (nonatomic, strong, readwrite) NSString *createDate;
+/// 为了将task异步转为同步
+@property (nonatomic, strong) dispatch_semaphore_t responseSemaphore;
 
 @end
 
@@ -40,6 +42,7 @@
         self.allowExecuteNext = YES;
         self.taskStatus = XRTaskStatusIdle;
         self.createDate = [self currentDateStr];
+        self.responseSemaphore = dispatch_semaphore_create(0);
         
         pthread_mutexattr_t attr;
         pthread_mutexattr_init(&attr);
@@ -59,6 +62,8 @@
                     [weakSelf.taskSchedulerWhenCompleted startExecute];
                 }
             }
+            
+            dispatch_semaphore_signal(weakSelf.responseSemaphore);
         };
     }
     return self;
@@ -111,7 +116,8 @@
     pthread_mutex_unlock(&_lock);
     
     if (self.taskBlock) {
-        self.taskBlock(self);
+        self.taskBlock(self, self.completeBlock);
+        dispatch_semaphore_wait(self.responseSemaphore, DISPATCH_TIME_FOREVER);
     }
 }
 
