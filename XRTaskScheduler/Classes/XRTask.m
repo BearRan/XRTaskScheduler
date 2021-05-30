@@ -27,13 +27,12 @@
 @property (nonatomic, strong, readwrite) NSString *createDate;
 /// 为了将task异步转为同步
 @property (nonatomic, strong) dispatch_semaphore_t responseSemaphore;
-/// 当前重试次数
+/// 当前重试次数（从1开始计算）
 @property (nonatomic, assign) NSInteger currentRetryCount;
 /// 绑定声明周期的对象（默认：nil）
 @property (nonatomic, weak) id bindDisposeObj;
 /// 是否使用dispose（默认：NO）
 @property (nonatomic, assign) BOOL ifUseDispose;
-
 
 @end
 
@@ -66,8 +65,8 @@
             if (weakSelf.parseIsSuccess) {
                 BOOL isSuccess = weakSelf.parseIsSuccess(data);
                 if (isSuccess) {
-                    /// 成功，
-                    [weakSelf setSuccessStatus];
+                    /// 成功
+                    weakSelf.taskStatus = XRTaskStatusSuccess;
                     /// 执行successTaskScheduler
                     [weakSelf.successTaskScheduler startExecute];
                     
@@ -81,15 +80,18 @@
                             weakSelf.currentRetryCount++;
                             
                             /// 重制状态，重新执行任务
-                            [weakSelf setIdleStatus];
+                            weakSelf.taskStatus = XRTaskStatusNeedRetry;
                             [weakSelf executeTaskIsRetry:YES];
                         } else {
                             NSLog(@"---task retry finish");
+                            /// 重试多次，仍然失败
+                            weakSelf.taskStatus = XRTaskStatusFailure;
                             /// 让异步转同步的锁得到释放
                             dispatch_semaphore_signal(weakSelf.responseSemaphore);
                         }
                     } else {
                         /// 无需重试，错误也可结束
+                        weakSelf.taskStatus = XRTaskStatusFailure;
                         /// 让异步转同步的锁得到释放
                         dispatch_semaphore_signal(weakSelf.responseSemaphore);
                     }
@@ -104,18 +106,6 @@
 {
     pthread_mutex_destroy(&_lock);
     NSLog(@"---task dealloc:%@", self.customData);
-}
-
-- (void)setSuccessStatus {
-    pthread_mutex_lock(&_lock);
-    self.taskStatus = XRTaskStatusSuccess;
-    pthread_mutex_unlock(&_lock);
-}
-
-- (void)setIdleStatus {
-    pthread_mutex_lock(&_lock);
-    self.taskStatus = XRTaskStatusIdle;
-    pthread_mutex_unlock(&_lock);
 }
 
 #pragma mark - Public
@@ -148,14 +138,16 @@
 
 /// 执行任务
 - (void)executeTaskIsRetry:(BOOL)isRetry {
-    pthread_mutex_lock(&_lock);
-    BOOL needQuite = self.taskStatus != XRTaskStatusIdle;
+    BOOL needQuite = YES;
+    if (isRetry) {
+        needQuite = self.taskStatus != XRTaskStatusNeedRetry;
+    } else {
+        needQuite = self.taskStatus != XRTaskStatusIdle;
+    }
     if (needQuite) {
-        pthread_mutex_unlock(&_lock);
         return;
     }
     self.taskStatus = XRTaskStatusExecuting;
-    pthread_mutex_unlock(&_lock);
     
     if (self.taskBlock) {
         self.taskBlock(self, self.successBlock, self.currentRetryCount);
@@ -169,11 +161,9 @@
 
 /// 取消任务
 - (void)cancelTask {
-    pthread_mutex_lock(&_lock);
     if (self.taskStatus != XRTaskStatusCanceled) {
         self.taskStatus = XRTaskStatusCanceled;
     }
-    pthread_mutex_unlock(&_lock);
 }
 
 /// 是否可以执行
@@ -227,6 +217,21 @@
     }
     
     return _taskID;
+}
+
+@synthesize taskStatus = _taskStatus;
+- (void)setTaskStatus:(XRTaskStatus)taskStatus{
+    pthread_mutex_lock(&_lock);
+    _taskStatus = taskStatus;
+    pthread_mutex_unlock(&_lock);
+}
+
+- (XRTaskStatus)taskStatus {
+    pthread_mutex_lock(&_lock);
+    XRTaskStatus tmpTaskStatus = _taskStatus;
+    pthread_mutex_unlock(&_lock);
+    
+    return tmpTaskStatus;
 }
 
 //获取当前时间

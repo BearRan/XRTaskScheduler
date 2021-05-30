@@ -24,6 +24,8 @@ typedef NS_ENUM(NSInteger, XRTaskStatus) {
     XRTaskStatusSuccess,
     /// 执行失败
     XRTaskStatusFailure,
+    /// 需要重试
+    XRTaskStatusNeedRetry,
     /// 被取消
     XRTaskStatusCanceled,
 };
@@ -48,6 +50,7 @@ typedef NS_ENUM(NSInteger, XRTaskStatus) {
 /**
  * task任务
  * block：设置型
+ * retryCount：重试次数，从1开始。0表示没有重试过。
  * 注意：任务执行完成后，一定要执行successBlock() ！！！！！！！！！！！！！！！。
  * 因为，successTaskScheduler，block中异步转同步，responseData。都依赖于successBlock！
  */
