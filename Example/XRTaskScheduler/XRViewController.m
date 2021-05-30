@@ -87,6 +87,15 @@
         tmpModel.demoVCName = @"XRDisposeDemoVC";
         [self.dataArray addObject:tmpModel];
     }
+    
+    {
+        tmpModel = [XRDemoModel new];
+        tmpModel.name = @"等待子任务完成";
+        tmpModel.demoVCName = @"XRWaitSubTaskCompleteDemoVC";
+        [self.dataArray addObject:tmpModel];
+    }
+    
+    
 }
 
 #pragma mark - UITableViewDelegate

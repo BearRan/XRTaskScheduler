@@ -41,15 +41,21 @@ typedef NS_ENUM(NSInteger, XRTaskStatus) {
 @property (nonatomic, strong) XRTaskScheduler *successTaskScheduler;
 /// 任务完成后，task是否需要缓存（默认：NO）
 @property (nonatomic, assign) BOOL ifNeedCacheWhenSuccessed;
-/// 是否允许执行下一个任务（默认：YES）
-@property (nonatomic, assign) BOOL allowExecuteNext;
+/**
+ * 是否允许执行下一个任务（默认：nil，请传@YES/@NO）
+ * 为nil时：checkAllowExecuteNext方法会通过taskStatus来决定
+ * 不为nil时：checkAllowExecuteNext方法会通过本属性来决定
+ * （此参数非必填，默认会用内部逻辑来决定）
+ */
+@property (nonatomic, strong) NSNumber * __nullable allowExecuteNext;
 /// 任务失败后，重试次数（默认：0）
 @property (nonatomic, assign) NSInteger maxRetryCount;
+/// 是否等待successTaskScheduler执行完才执行下一个taskBlock（默认：NO）
+@property (nonatomic, assign) BOOL waitSuccessTaskFinish;
 
 #pragma mark Block型参数
 /**
  * task任务
- * block：设置型
  * retryCount：重试次数，从1开始。0表示没有重试过。
  * 注意：任务执行完成后，一定要执行successBlock() ！！！！！！！！！！！！！！！。
  * 因为，successTaskScheduler，block中异步转同步，responseData。都依赖于successBlock！
@@ -59,9 +65,8 @@ typedef NS_ENUM(NSInteger, XRTaskStatus) {
 // 可选：successTaskScheduler，responseData
 @property (nonatomic, copy) XRTaskBlock taskBlock;
 /**
- * 解析如何判定是否完成task
- *（调用方来提供解析方法，默认：将responseData按bool类型来解析）
- * block：设置型
+ * 解析如何判定taskBlock是否执行成功
+ *（调用方需要提供解析方法，默认：返回YES）
  */
 @property (nonatomic, copy) XRParseIsSuccess parseIsSuccess;
 
@@ -96,6 +101,8 @@ typedef NS_ENUM(NSInteger, XRTaskStatus) {
 - (BOOL)ifCanExecute;
 /// 绑定生命周期
 - (void)disposeBy:(id)bindDisposeObj;
+/// 是否允许执行下一个任务
+- (BOOL)checkAllowExecuteNext;
 
 @end
 

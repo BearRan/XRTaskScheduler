@@ -11,6 +11,10 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef dispatch_queue_t _Nullable (^XRTaskQueueBlock)(NSInteger index);
+/**
+ * completeCount：成功触发过多少次（从0开始计数）
+ */
+typedef void(^XRTaskSchedulerCompleteBlock)(NSInteger completeCount);
 
 @interface XRTaskScheduler : NSObject
 
@@ -21,7 +25,9 @@ typedef dispatch_queue_t _Nullable (^XRTaskQueueBlock)(NSInteger index);
 /// 任务并行数量（默认：1）
 @property (nonatomic, assign) NSInteger concurrentCount;
 /// 自定义执行任务所在的队列（默认：nil）
-@property (nonatomic, copy) XRTaskQueueBlock getTaskQueueBlock;
+@property (nonatomic, copy) XRTaskQueueBlock __nullable getTaskQueueBlock;
+/// 所有任务都完成的回调（默认：nil）
+@property (nonatomic, copy) XRTaskSchedulerCompleteBlock schedulerCompleteBlock;
 
 + (instancetype)shareInstance;
 - (instancetype)initWithSchedulerType:(XRTaskSchedulerType)schedulerType;

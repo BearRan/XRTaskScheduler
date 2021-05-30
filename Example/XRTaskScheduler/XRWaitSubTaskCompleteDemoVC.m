@@ -1,19 +1,19 @@
 //
-//  XRProcessCompleteDemoVC.m
+//  XRWaitSubTaskCompleteDemoVC.m
 //  XRTaskScheduler_Example
 //
-//  Created by Bear on 2021/5/29.
+//  Created by Bear on 2021/5/30.
 //  Copyright © 2021 Bear. All rights reserved.
 //
 
-#import "XRProcessCompleteDemoVC.h"
+#import "XRWaitSubTaskCompleteDemoVC.h"
 #import "QiyuSDK.h"
 
-@interface XRProcessCompleteDemoVC ()
+@interface XRWaitSubTaskCompleteDemoVC ()
 
 @end
 
-@implementation XRProcessCompleteDemoVC
+@implementation XRWaitSubTaskCompleteDemoVC
 
 - (void)startTest {
     [super startTest];
@@ -26,32 +26,21 @@
         }
     }
     [self.taskScheduler startExecute];
-    
-    
 }
 
 - (void)generateQiYuTask {
     XRTask *task = [XRTask new];
     task.taskID = @"Qiyu";
     task.ifNeedCacheWhenSuccessed = YES;
-    task.successTaskScheduler.maxTaskCount = 1;
     task.customData = @"allowNext";
     task.maxRetryCount = 3;
-    /// 添加block方法一
-//    task.taskBlock = ^(XRTask * _Nonnull task, XRSuccessBlock  _Nonnull successBlock, NSInteger retryCount) {
-//
-//        if (successBlock) {
-//            successBlock(@(resValue));
-//        }
-//    };
+//    task.waitSuccessTaskFinish = YES;
     /// 添加block方法二
     task.taskBlock = ^(XRTask * _Nonnull task, XRSuccessBlock  _Nonnull successBlock, NSInteger retryCount) {
         [[QiyuSDK shareInstance] startInitialWithRespBlock:^(BOOL value) {
             if (successBlock) {
                 successBlock(@(value));
             }
-
-//            [self delayResumeTask];
         }];
     };
     /// 配置解析是否success
@@ -62,12 +51,15 @@
         return NO;
     };
     [self.taskScheduler addTask:task];
+    
+    [self configSubTask:task];
 }
 
-- (void)delayResumeTask {
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self.taskScheduler resumeExecute];
-    });
+/// 配置子任务
+- (void)configSubTask:(XRTask *)mainTask {
+    for (int i = 0; i < 2; i++) {
+        [mainTask.successTaskScheduler addTask:[self generateTestSubTaskWithIndex:i]];
+    }
 }
 
 @end

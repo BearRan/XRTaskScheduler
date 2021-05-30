@@ -35,6 +35,8 @@ typedef NS_ENUM(NSInteger, XRSchedulerStatus) {
 @property (nonatomic, assign) XRSchedulerStatus schedulerStatus;
 /// 在执行前，是否需要排序
 @property (nonatomic, assign) BOOL ifNeedOrder;
+///
+@property (nonatomic, assign) NSInteger completeCount;
 
 @end
 
@@ -67,6 +69,7 @@ typedef NS_ENUM(NSInteger, XRSchedulerStatus) {
         self.getTaskQueueBlock = nil;
         self.schedulerStatus = XRSchedulerStatusIdle;
         self.ifNeedOrder = YES;
+        self.completeCount = 0;
         
         pthread_mutexattr_t attr;
         pthread_mutexattr_init(&attr);
@@ -191,7 +194,7 @@ typedef NS_ENUM(NSInteger, XRSchedulerStatus) {
                 task = [self executeNext];
                 
                 /// 判断是否允许执行下一个任务
-                if (task && !task.allowExecuteNext) {
+                if (task && ![task checkAllowExecuteNext]) {
                     NSLog(@"---task中断，不允许执行下一个task");
                     task = nil;
                     break;
@@ -202,6 +205,13 @@ typedef NS_ENUM(NSInteger, XRSchedulerStatus) {
             // 状态需要重制为TryExecute，方便有任务添加过来时，可以再次执行该防范。
             if (self.schedulerStatus == XRSchedulerStatusExecuting) {
                 self.schedulerStatus = XRSchedulerStatusTryExecute;
+            }
+            
+            if ([self taskIsEmpty]) {
+                if (self.schedulerCompleteBlock) {
+                    self.schedulerCompleteBlock(self.completeCount);
+                }
+                self.completeCount++;
             }
         });
     }

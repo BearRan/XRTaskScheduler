@@ -45,13 +45,14 @@
     if (self) {
         self.priority = XRTaskPriorityDefault;
         self.ifNeedCacheWhenSuccessed = NO;
-        self.allowExecuteNext = YES;
+        self.allowExecuteNext = nil;
         self.taskStatus = XRTaskStatusIdle;
         self.createDate = [self currentDateStr];
         self.responseSemaphore = dispatch_semaphore_create(0);
         self.currentRetryCount = 0;
         self.maxRetryCount = 0;
         self.ifUseDispose = NO;
+        self.waitSuccessTaskFinish = NO;
         
         pthread_mutexattr_t attr;
         pthread_mutexattr_init(&attr);
@@ -70,9 +71,20 @@
                     /// 执行successTaskScheduler
                     [weakSelf.successTaskScheduler startExecute];
                     
-                    /// 让异步转同步的锁得到释放
-                    dispatch_semaphore_signal(weakSelf.responseSemaphore);
+                    if (weakSelf.waitSuccessTaskFinish) {
+                        /// 需要等待startExecute都执行完
+                        weakSelf.successTaskScheduler.schedulerCompleteBlock = ^(NSInteger completeCount) {
+                            if (completeCount == 0) {
+                                /// 让异步转同步的锁得到释放
+                                dispatch_semaphore_signal(weakSelf.responseSemaphore);
+                            }
+                        };
+                    } else {
+                        /// 让异步转同步的锁得到释放
+                        dispatch_semaphore_signal(weakSelf.responseSemaphore);
+                    }
                 } else {
+#warning Bear retry在task被销毁时，就不要执行了。这个逻辑加一下
                     if (weakSelf.maxRetryCount > 0) {
                         /// 失败，尝试重试
                         if (weakSelf.currentRetryCount < weakSelf.maxRetryCount) {
@@ -186,13 +198,24 @@
     }
 }
 
+/// 是否允许执行下一个任务
+- (BOOL)checkAllowExecuteNext {
+    if (self.allowExecuteNext) {
+        return [self.allowExecuteNext boolValue];
+    }
+    
+    if (self.taskStatus == XRTaskStatusSuccess) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
 
 #warning Bear 这里增加task，Scheduler递归添加，导致的死循环的问题的防护
 #pragma Setter & Getter
 - (XRTaskScheduler *)successTaskScheduler {
-    if (_successTaskScheduler) {
+    if (!_successTaskScheduler) {
         _successTaskScheduler = [XRTaskScheduler new];
-        _successTaskScheduler.maxTaskCount = 1;
     }
     
     return _successTaskScheduler;
@@ -201,10 +224,7 @@
 - (XRParseIsSuccess)parseIsSuccess {
     if (!_parseIsSuccess) {
         _parseIsSuccess = ^BOOL(id  _Nonnull data) {
-            if (data) {
-                return YES;
-            }
-            return NO;
+            return YES;
         };
     }
     
