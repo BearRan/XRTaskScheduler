@@ -11,8 +11,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void(^XRSuccessBlock)(id __nullable data);
-typedef void(^XRTaskBlock)(XRTask *task, XRSuccessBlock successBlock, NSInteger retryCount);
+typedef void(^XRResponseBlock)(id __nullable data);
+typedef void(^XRTaskBlock)(XRTask *task, XRResponseBlock responseBlock, NSInteger retryCount);
 typedef BOOL(^XRParseIsSuccess)(id data);
 
 typedef NS_ENUM(NSInteger, XRTaskStatus) {
@@ -57,8 +57,8 @@ typedef NS_ENUM(NSInteger, XRTaskStatus) {
 /**
  * task任务
  * retryCount：重试次数，从1开始。0表示没有重试过。
- * 注意：任务执行完成后，一定要执行successBlock() ！！！！！！！！！！！！！！！。
- * 因为，successTaskScheduler，block中异步转同步，responseData。都依赖于successBlock！
+ * 注意：任务执行完成后，一定要执行responseBlock() ！！！！！！！！！！！！！！！。
+ * 因为，successTaskScheduler，block中异步转同步，responseData。都依赖于responseBlock！
  */
 #warning Bear 不过还是可以优化的。可以捕获block。
 // 必须：block中异步转同步。
@@ -73,7 +73,7 @@ typedef NS_ENUM(NSInteger, XRTaskStatus) {
 #pragma mark 只读型参数
 /// 任务状态（默认：Idle）
 @property (nonatomic, assign, readonly) XRTaskStatus taskStatus;
-/// successBlock生成的返回数据
+/// responseBlock生成的返回数据
 @property (nonatomic, strong, readonly) id responseData;
 
 #pragma mark 其他无关参数

@@ -38,22 +38,22 @@
     task.customData = @"allowNext";
     task.maxRetryCount = 3;
     /// 添加block方法一
-//    task.taskBlock = ^(XRTask * _Nonnull task, XRSuccessBlock  _Nonnull successBlock, NSInteger retryCount) {
-//
-//        if (successBlock) {
-//            successBlock(@(resValue));
-//        }
-//    };
-    /// 添加block方法二
-    task.taskBlock = ^(XRTask * _Nonnull task, XRSuccessBlock  _Nonnull successBlock, NSInteger retryCount) {
-        [[QiyuSDK shareInstance] startInitialWithRespBlock:^(BOOL value) {
-            if (successBlock) {
-                successBlock(@(value));
-            }
-
-//            [self delayResumeTask];
-        }];
+    task.taskBlock = ^(XRTask * _Nonnull task, XRResponseBlock  _Nonnull responseBlock, NSInteger retryCount) {
+        BOOL resValue = [[QiyuSDK shareInstance] startInitial];
+        if (responseBlock) {
+            responseBlock(@(resValue));
+        }
     };
+    /// 添加block方法二
+//    task.taskBlock = ^(XRTask * _Nonnull task, XRResponseBlock  _Nonnull responseBlock, NSInteger retryCount) {
+//        [[QiyuSDK shareInstance] startInitialWithRespBlock:^(BOOL value) {
+//            if (responseBlock) {
+//                responseBlock(@(value));
+//            }
+//
+////            [self delayResumeTask];
+//        }];
+//    };
     /// 配置解析是否success
     task.parseIsSuccess = ^BOOL(id  _Nonnull data) {
         if ([data boolValue] == YES) {

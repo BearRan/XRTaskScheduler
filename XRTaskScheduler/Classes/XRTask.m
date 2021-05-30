@@ -18,7 +18,7 @@
  * task完成时的block
  * （调用方只能执行）
  */
-@property (nonatomic, copy) XRSuccessBlock successBlock;
+@property (nonatomic, copy) XRResponseBlock responseBlock;
 /// 任务状态（默认：Idle）
 @property (nonatomic, assign, readwrite) XRTaskStatus taskStatus;
 /// block生成的返回数据
@@ -61,7 +61,7 @@
         pthread_mutexattr_destroy(&attr);
         
         __weak typeof(self) weakSelf = self;
-        self.successBlock = ^(id  _Nonnull data) {
+        self.responseBlock = ^(id  _Nonnull data) {
             weakSelf.responseData = data;
             if (weakSelf.parseIsSuccess) {
                 BOOL isSuccess = weakSelf.parseIsSuccess(data);
@@ -138,7 +138,7 @@
         if (self.parseIsSuccess(self.responseData)) {
             [self.successTaskScheduler startExecute];
         } else {
-            // 未完成，则会在successBlock中执行
+            // 未完成，则会在responseBlock中执行
         }
     }
 }
@@ -162,7 +162,7 @@
     self.taskStatus = XRTaskStatusExecuting;
     
     if (self.taskBlock) {
-        self.taskBlock(self, self.successBlock, self.currentRetryCount);
+        self.taskBlock(self, self.responseBlock, self.currentRetryCount);
 #warning Bear 超时时间加一下
         if (!isRetry) {
             /// 常规调用的话要加锁，为了异步转同步。

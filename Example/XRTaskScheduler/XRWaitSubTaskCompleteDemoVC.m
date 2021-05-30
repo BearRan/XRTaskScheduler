@@ -36,10 +36,10 @@
     task.maxRetryCount = 3;
 //    task.waitSuccessTaskFinish = YES;
     /// 添加block方法二
-    task.taskBlock = ^(XRTask * _Nonnull task, XRSuccessBlock  _Nonnull successBlock, NSInteger retryCount) {
+    task.taskBlock = ^(XRTask * _Nonnull task, XRResponseBlock  _Nonnull responseBlock, NSInteger retryCount) {
         [[QiyuSDK shareInstance] startInitialWithRespBlock:^(BOOL value) {
-            if (successBlock) {
-                successBlock(@(value));
+            if (responseBlock) {
+                responseBlock(@(value));
             }
         }];
     };
