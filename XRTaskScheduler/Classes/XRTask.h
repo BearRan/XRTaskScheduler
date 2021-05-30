@@ -11,17 +11,19 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void(^XRCompleteBlock)(id __nullable data);
-typedef void(^XRTaskBlock)(XRTask *task, XRCompleteBlock completeBlock, NSInteger retryCount);
-typedef BOOL(^XRParseIsComplete)(id data);
+typedef void(^XRSuccessBlock)(id __nullable data);
+typedef void(^XRTaskBlock)(XRTask *task, XRSuccessBlock successBlock, NSInteger retryCount);
+typedef BOOL(^XRParseIsSuccess)(id data);
 
 typedef NS_ENUM(NSInteger, XRTaskStatus) {
     /// 空
     XRTaskStatusIdle,
     /// 执行中
     XRTaskStatusExecuting,
-    /// 执行完成
-    XRTaskStatusCompleted,
+    /// 执行成功
+    XRTaskStatusSuccess,
+    /// 执行失败
+    XRTaskStatusFailure,
     /// 被取消
     XRTaskStatusCanceled,
 };
@@ -33,10 +35,10 @@ typedef NS_ENUM(NSInteger, XRTaskStatus) {
 @property (nonatomic, assign) XRTaskPriority priority;
 /// 任务唯一ID
 @property (nonatomic, strong) NSString *taskID;
-/// 任务完成时，需要执行的task
-@property (nonatomic, strong) XRTaskScheduler *taskSchedulerWhenCompleted;
+/// 任务成功时，需要执行的task
+@property (nonatomic, strong) XRTaskScheduler *successTaskScheduler;
 /// 任务完成后，task是否需要缓存（默认：NO）
-@property (nonatomic, assign) BOOL ifNeedCacheWhenCompleted;
+@property (nonatomic, assign) BOOL ifNeedCacheWhenSuccessed;
 /// 是否允许执行下一个任务（默认：YES）
 @property (nonatomic, assign) BOOL allowExecuteNext;
 /// 任务失败后，重试次数（默认：0）
@@ -46,24 +48,24 @@ typedef NS_ENUM(NSInteger, XRTaskStatus) {
 /**
  * task任务
  * block：设置型
- * 注意：任务执行完成后，一定要执行completeBlock() ！！！！！！！！！！！！！！！。
- * 因为，taskSchedulerWhenCompleted，block中异步转同步，responseData。都依赖于completeBlock！
+ * 注意：任务执行完成后，一定要执行successBlock() ！！！！！！！！！！！！！！！。
+ * 因为，successTaskScheduler，block中异步转同步，responseData。都依赖于successBlock！
  */
 #warning Bear 不过还是可以优化的。可以捕获block。
 // 必须：block中异步转同步。
-// 可选：taskSchedulerWhenCompleted，responseData
+// 可选：successTaskScheduler，responseData
 @property (nonatomic, copy) XRTaskBlock taskBlock;
 /**
  * 解析如何判定是否完成task
  *（调用方来提供解析方法，默认：将responseData按bool类型来解析）
  * block：设置型
  */
-@property (nonatomic, copy) XRParseIsComplete parseIsComplete;
+@property (nonatomic, copy) XRParseIsSuccess parseIsSuccess;
 
 #pragma mark 只读型参数
 /// 任务状态（默认：Idle）
 @property (nonatomic, assign, readonly) XRTaskStatus taskStatus;
-/// completeBlock生成的返回数据
+/// successBlock生成的返回数据
 @property (nonatomic, strong, readonly) id responseData;
 
 #pragma mark 其他无关参数

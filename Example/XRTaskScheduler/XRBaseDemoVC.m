@@ -32,13 +32,13 @@
 - (XRTask *)generateTestTaskWithIndex:(NSInteger)index {
     XRTask *task = [XRTask new];
     task.customData = [NSString stringWithFormat:@"task-%ld", (long)index];
-    task.taskBlock = ^(XRTask * _Nonnull task, XRCompleteBlock  _Nonnull completeBlock, NSInteger retryCount) {
+    task.taskBlock = ^(XRTask * _Nonnull task, XRSuccessBlock  _Nonnull successBlock, NSInteger retryCount) {
         NSLog(@"---task start:%ld thread:%@", (long)index, [NSThread currentThread]);
         [NSThread sleepForTimeInterval:2.0f];
         NSLog(@"---task finish:%ld", (long)index);
         
-        if (completeBlock) {
-            completeBlock(nil);
+        if (successBlock) {
+            successBlock(nil);
         }
     };
     task.priority = arc4random() % 1000;

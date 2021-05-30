@@ -37,12 +37,12 @@
 - (void)generateQiYuTask {
     XRTask *task = [XRTask new];
     task.taskID = @"Qiyu";
-    task.ifNeedCacheWhenCompleted = YES;
-    task.taskSchedulerWhenCompleted.maxTaskCount = 1;
+    task.ifNeedCacheWhenSuccessed = YES;
+    task.successTaskScheduler.maxTaskCount = 1;
     task.customData = @"allowNext";
     task.maxRetryCount = 3;
     /// 添加block方法一
-//    task.taskBlock = ^(XRTask * _Nonnull task, XRCompleteBlock  _Nonnull completeBlock, NSInteger retryCount) {
+//    task.taskBlock = ^(XRTask * _Nonnull task, XRSuccessBlock  _Nonnull successBlock, NSInteger retryCount) {
 //        BOOL resValue = [[QiyuSDK shareInstance] startInitial];
 //        if ([(NSString *)task.customData isEqualToString:@"allowNext"]) {
 //            task.allowExecuteNext = YES;
@@ -50,23 +50,23 @@
 //            task.allowExecuteNext = NO;
 //        }
 //
-//        if (completeBlock) {
-//            completeBlock(@(resValue));
+//        if (successBlock) {
+//            successBlock(@(resValue));
 //        }
 //    };
     /// 添加block方法二
-    task.taskBlock = ^(XRTask * _Nonnull task, XRCompleteBlock  _Nonnull completeBlock, NSInteger retryCount) {
+    task.taskBlock = ^(XRTask * _Nonnull task, XRSuccessBlock  _Nonnull successBlock, NSInteger retryCount) {
         [[QiyuSDK shareInstance] startInitialWithRespBlock:^(BOOL value) {
-            task.allowExecuteNext = task.parseIsComplete(@(value));
-            if (completeBlock) {
-                completeBlock(@(value));
+            task.allowExecuteNext = task.parseIsSuccess(@(value));
+            if (successBlock) {
+                successBlock(@(value));
             }
 
 //            [self delayResumeTask];
         }];
     };
-    /// 配置解析是否finish
-    task.parseIsComplete = ^BOOL(id  _Nonnull data) {
+    /// 配置解析是否success
+    task.parseIsSuccess = ^BOOL(id  _Nonnull data) {
         if ([data boolValue] == YES) {
             return YES;
         }

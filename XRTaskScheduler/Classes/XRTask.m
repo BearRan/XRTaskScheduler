@@ -18,7 +18,7 @@
  * task完成时的block
  * （调用方只能执行）
  */
-@property (nonatomic, copy) XRCompleteBlock completeBlock;
+@property (nonatomic, copy) XRSuccessBlock successBlock;
 /// 任务状态（默认：Idle）
 @property (nonatomic, assign, readwrite) XRTaskStatus taskStatus;
 /// block生成的返回数据
@@ -45,7 +45,7 @@
     self = [super init];
     if (self) {
         self.priority = XRTaskPriorityDefault;
-        self.ifNeedCacheWhenCompleted = NO;
+        self.ifNeedCacheWhenSuccessed = NO;
         self.allowExecuteNext = YES;
         self.taskStatus = XRTaskStatusIdle;
         self.createDate = [self currentDateStr];
@@ -61,16 +61,17 @@
         pthread_mutexattr_destroy(&attr);
         
         __weak typeof(self) weakSelf = self;
-        self.completeBlock = ^(id  _Nonnull data) {
+        self.successBlock = ^(id  _Nonnull data) {
             weakSelf.responseData = data;
-            if (weakSelf.parseIsComplete) {
-                BOOL isComplete = weakSelf.parseIsComplete(data);
-                if (isComplete) {
+            if (weakSelf.parseIsSuccess) {
+                BOOL isSuccess = weakSelf.parseIsSuccess(data);
+                if (isSuccess) {
                     /// 成功，
-                    [weakSelf setCompleteStatus];
-                    /// 执行taskSchedulerWhenCompleted
-                    [weakSelf.taskSchedulerWhenCompleted startExecute];
+                    [weakSelf setSuccessStatus];
+                    /// 执行successTaskScheduler
+                    [weakSelf.successTaskScheduler startExecute];
                     
+                    /// 让异步转同步的锁得到释放
                     dispatch_semaphore_signal(weakSelf.responseSemaphore);
                 } else {
                     if (weakSelf.maxRetryCount > 0) {
@@ -84,10 +85,12 @@
                             [weakSelf executeTaskIsRetry:YES];
                         } else {
                             NSLog(@"---task retry finish");
+                            /// 让异步转同步的锁得到释放
                             dispatch_semaphore_signal(weakSelf.responseSemaphore);
                         }
                     } else {
                         /// 无需重试，错误也可结束
+                        /// 让异步转同步的锁得到释放
                         dispatch_semaphore_signal(weakSelf.responseSemaphore);
                     }
                 }
@@ -103,9 +106,9 @@
     NSLog(@"---task dealloc:%@", self.customData);
 }
 
-- (void)setCompleteStatus {
+- (void)setSuccessStatus {
     pthread_mutex_lock(&_lock);
-    self.taskStatus = XRTaskStatusCompleted;
+    self.taskStatus = XRTaskStatusSuccess;
     pthread_mutex_unlock(&_lock);
 }
 
@@ -121,19 +124,19 @@
 - (void)tryToExecuteCompletedTaskBlock:(XRTaskBlock)taskBlock {
     XRTask *task = [XRTask new];
     task.taskBlock = taskBlock;
-    [self.taskSchedulerWhenCompleted addTask:task];
+    [self.successTaskScheduler addTask:task];
     
     [self tryToExecuteCompletedScheduler];
 }
 
 /// 在任务完成时尝试执行taskScheduler
 - (void)tryToExecuteCompletedScheduler {
-    if (self.parseIsComplete) {
+    if (self.parseIsSuccess) {
         /// 尝试根据responseData来解析task是否完成
-        if (self.parseIsComplete(self.responseData)) {
-            [self.taskSchedulerWhenCompleted startExecute];
+        if (self.parseIsSuccess(self.responseData)) {
+            [self.successTaskScheduler startExecute];
         } else {
-            // 未完成，则会在completeBlock中执行
+            // 未完成，则会在successBlock中执行
         }
     }
 }
@@ -155,7 +158,7 @@
     pthread_mutex_unlock(&_lock);
     
     if (self.taskBlock) {
-        self.taskBlock(self, self.completeBlock, self.currentRetryCount);
+        self.taskBlock(self, self.successBlock, self.currentRetryCount);
 #warning Bear 超时时间加一下
         if (!isRetry) {
             /// 常规调用的话要加锁，为了异步转同步。
@@ -196,18 +199,18 @@
 
 #warning Bear 这里增加task，Scheduler递归添加，导致的死循环的问题的防护
 #pragma Setter & Getter
-- (XRTaskScheduler *)taskSchedulerWhenCompleted {
-    if (_taskSchedulerWhenCompleted) {
-        _taskSchedulerWhenCompleted = [XRTaskScheduler new];
-        _taskSchedulerWhenCompleted.maxTaskCount = 1;
+- (XRTaskScheduler *)successTaskScheduler {
+    if (_successTaskScheduler) {
+        _successTaskScheduler = [XRTaskScheduler new];
+        _successTaskScheduler.maxTaskCount = 1;
     }
     
-    return _taskSchedulerWhenCompleted;
+    return _successTaskScheduler;
 }
 
-- (XRParseIsComplete)parseIsComplete {
-    if (!_parseIsComplete) {
-        _parseIsComplete = ^BOOL(id  _Nonnull data) {
+- (XRParseIsSuccess)parseIsSuccess {
+    if (!_parseIsSuccess) {
+        _parseIsSuccess = ^BOOL(id  _Nonnull data) {
             if (data) {
                 return YES;
             }
@@ -215,7 +218,7 @@
         };
     }
     
-    return _parseIsComplete;
+    return _parseIsSuccess;
 }
 
 - (NSString *)taskID {
