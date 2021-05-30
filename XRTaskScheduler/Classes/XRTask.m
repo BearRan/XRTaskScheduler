@@ -76,8 +76,8 @@
                     if (weakSelf.maxRetryCount > 0) {
                         /// 失败，尝试重试
                         if (weakSelf.currentRetryCount < weakSelf.maxRetryCount) {
-                            NSLog(@"---task retry");
                             weakSelf.currentRetryCount++;
+                            NSLog(@"---task retry %ld time", (long)weakSelf.currentRetryCount);
                             
                             /// 重制状态，重新执行任务
                             weakSelf.taskStatus = XRTaskStatusNeedRetry;
