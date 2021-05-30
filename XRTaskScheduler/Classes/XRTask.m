@@ -68,12 +68,12 @@
                 if (isSuccess) {
                     /// 成功
                     weakSelf.taskStatus = XRTaskStatusSuccess;
-                    /// 执行successTaskScheduler
-                    [weakSelf.successTaskScheduler startExecute];
+                    /// 执行subTaskScheduler
+                    [weakSelf.subTaskScheduler startExecute];
                     
                     if (weakSelf.waitSuccessTaskFinish) {
                         /// 需要等待startExecute都执行完
-                        weakSelf.successTaskScheduler.schedulerCompleteBlock = ^(NSInteger completeCount) {
+                        weakSelf.subTaskScheduler.schedulerCompleteBlock = ^(NSInteger completeCount) {
                             if (completeCount == 0) {
                                 /// 让异步转同步的锁得到释放
                                 dispatch_semaphore_signal(weakSelf.responseSemaphore);
@@ -126,7 +126,7 @@
 - (void)tryToExecuteCompletedTaskBlock:(XRTaskBlock)taskBlock {
     XRTask *task = [XRTask new];
     task.taskBlock = taskBlock;
-    [self.successTaskScheduler addTask:task];
+    [self.subTaskScheduler addTask:task];
     
     [self tryToExecuteCompletedScheduler];
 }
@@ -136,7 +136,7 @@
     if (self.parseIsSuccess) {
         /// 尝试根据responseData来解析task是否完成
         if (self.parseIsSuccess(self.responseData)) {
-            [self.successTaskScheduler startExecute];
+            [self.subTaskScheduler startExecute];
         } else {
             // 未完成，则会在responseBlock中执行
         }
@@ -213,12 +213,12 @@
 
 #warning Bear 这里增加task，Scheduler递归添加，导致的死循环的问题的防护
 #pragma Setter & Getter
-- (XRTaskScheduler *)successTaskScheduler {
-    if (!_successTaskScheduler) {
-        _successTaskScheduler = [XRTaskScheduler new];
+- (XRTaskScheduler *)subTaskScheduler {
+    if (!_subTaskScheduler) {
+        _subTaskScheduler = [XRTaskScheduler new];
     }
     
-    return _successTaskScheduler;
+    return _subTaskScheduler;
 }
 
 - (XRParseIsSuccess)parseIsSuccess {

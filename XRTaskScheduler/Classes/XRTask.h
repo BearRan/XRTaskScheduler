@@ -38,7 +38,7 @@ typedef NS_ENUM(NSInteger, XRTaskStatus) {
 /// 任务唯一ID
 @property (nonatomic, strong) NSString *taskID;
 /// 任务成功时，需要执行的task
-@property (nonatomic, strong) XRTaskScheduler *successTaskScheduler;
+@property (nonatomic, strong) XRTaskScheduler *subTaskScheduler;
 /// 任务完成后，task是否需要缓存（默认：NO）
 @property (nonatomic, assign) BOOL ifNeedCacheWhenSuccessed;
 /**
@@ -50,7 +50,7 @@ typedef NS_ENUM(NSInteger, XRTaskStatus) {
 @property (nonatomic, strong) NSNumber * __nullable allowExecuteNext;
 /// 任务失败后，重试次数（默认：0）
 @property (nonatomic, assign) NSInteger maxRetryCount;
-/// 是否等待successTaskScheduler执行完才执行下一个taskBlock（默认：NO）
+/// 是否等待subTaskScheduler执行完才执行下一个taskBlock（默认：NO）
 @property (nonatomic, assign) BOOL waitSuccessTaskFinish;
 
 #pragma mark Block型参数
@@ -58,11 +58,11 @@ typedef NS_ENUM(NSInteger, XRTaskStatus) {
  * task任务
  * retryCount：重试次数，从1开始。0表示没有重试过。
  * 注意：任务执行完成后，一定要执行responseBlock() ！！！！！！！！！！！！！！！。
- * 因为，successTaskScheduler，block中异步转同步，responseData。都依赖于responseBlock！
+ * 因为，subTaskScheduler，block中异步转同步，responseData。都依赖于responseBlock！
  */
 #warning Bear 不过还是可以优化的。可以捕获block。
 // 必须：block中异步转同步。
-// 可选：successTaskScheduler，responseData
+// 可选：subTaskScheduler，responseData
 @property (nonatomic, copy) XRTaskBlock taskBlock;
 /**
  * 解析如何判定taskBlock是否执行成功

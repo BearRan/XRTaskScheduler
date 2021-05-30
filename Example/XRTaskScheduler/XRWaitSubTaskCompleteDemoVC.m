@@ -58,7 +58,7 @@
 /// 配置子任务
 - (void)configSubTask:(XRTask *)mainTask {
     for (int i = 0; i < 2; i++) {
-        [mainTask.successTaskScheduler addTask:[self generateTestSubTaskWithIndex:i]];
+        [mainTask.subTaskScheduler addTask:[self generateTestSubTaskWithIndex:i]];
     }
 }
 

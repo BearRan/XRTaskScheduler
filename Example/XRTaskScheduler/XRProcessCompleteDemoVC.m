@@ -34,7 +34,7 @@
     XRTask *task = [XRTask new];
     task.taskID = @"Qiyu";
     task.ifNeedCacheWhenSuccessed = YES;
-    task.successTaskScheduler.maxTaskCount = 1;
+    task.subTaskScheduler.maxTaskCount = 1;
     task.customData = @"allowNext";
     task.maxRetryCount = 3;
     /// 添加block方法一
