@@ -98,12 +98,22 @@
                             NSLog(@"---task retry finish");
                             /// 重试多次，仍然失败
                             weakSelf.taskStatus = XRTaskStatusFailure;
+                            
+                            if (weakSelf.failureBlock) {
+                                weakSelf.failureBlock(weakSelf, YES);
+                            }
+                            
                             /// 让异步转同步的锁得到释放
                             dispatch_semaphore_signal(weakSelf.responseSemaphore);
                         }
                     } else {
                         /// 无需重试，错误也可结束
                         weakSelf.taskStatus = XRTaskStatusFailure;
+                        
+                        if (weakSelf.failureBlock) {
+                            weakSelf.failureBlock(weakSelf, NO);
+                        }
+                        
                         /// 让异步转同步的锁得到释放
                         dispatch_semaphore_signal(weakSelf.responseSemaphore);
                     }

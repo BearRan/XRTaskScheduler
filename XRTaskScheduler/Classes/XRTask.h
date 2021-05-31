@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef void(^XRResponseBlock)(id __nullable data);
 typedef void(^XRTaskBlock)(XRTask *task, XRResponseBlock responseBlock, NSInteger retryCount);
+typedef void(^XRTaskFailureBlock)(XRTask *task, BOOL isLastRetry);
 typedef BOOL(^XRParseIsSuccess)(id data);
 
 typedef NS_ENUM(NSInteger, XRTaskStatus) {
@@ -64,6 +65,11 @@ typedef NS_ENUM(NSInteger, XRTaskStatus) {
 // 必须：block中异步转同步。
 // 可选：subTaskScheduler，responseData
 @property (nonatomic, copy) XRTaskBlock taskBlock;
+/**
+ * 失败block
+ * isLastRetry：是否是最后一次重试
+ */
+@property (nonatomic, copy) XRTaskFailureBlock failureBlock;
 /**
  * 解析如何判定taskBlock是否执行成功
  *（调用方需要提供解析方法，默认：返回YES）
